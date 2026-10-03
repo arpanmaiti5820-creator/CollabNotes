@@ -168,8 +168,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const notesFile = path.join(__dirname, "data", "notes.json");
-const foldersFile =
-    path.join(__dirname, "data", "folders.json");
+const foldersFile =path.join(__dirname, "data", "folders.json");
+// ==============================
+// Initialize data storage
+// ==============================
+
+const dataDir = path.join(__dirname, "data");
+
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+}
+
+if (!fs.existsSync(notesFile)) {
+    fs.writeFileSync(notesFile, "[]");
+}
+
+if (!fs.existsSync(foldersFile)) {
+    fs.writeFileSync(foldersFile, "[]");
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
