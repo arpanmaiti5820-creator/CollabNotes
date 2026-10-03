@@ -3,22 +3,40 @@ const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const mailTransporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.BREVO_SMTP_USER,
-        pass: process.env.BREVO_SMTP_PASS
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+
+async function sendBrevoEmail({ to, name, subject, textContent, htmlContent }) {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+            "accept": "application/json",
+            "api-key": BREVO_API_KEY,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({
+            sender: {
+                name: "CollabNotes",
+                email: "arpanmaiti5820@gmail.com"
+            },
+            to: [
+                {
+                    email: to,
+                    name: name || "User"
+                }
+            ],
+            subject,
+            textContent,
+            htmlContent
+        })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Brevo API error: ${response.status} ${errorText}`);
     }
-});
-mailTransporter.verify((error, success) => {
-    if (error) {
-        console.error("Brevo SMTP connection failed:", error);
-    } else {
-        console.log("Brevo SMTP connection successful!");
-    }
-});
+
+    return await response.json();
+}
 
 const express = require("express");
 const fs = require("fs");
@@ -896,14 +914,12 @@ app.post("/api/forgot-password", async (req, res) => {
             `${process.env.APP_URL}/reset-password.html?token=${resetToken}`;
 
         // Send reset email through Brevo
-        await mailTransporter.sendMail({
-            from: {
-                name: "CollabNotes",
-                address: "arpanmaiti5820@gmail.com"
-            },
+        await sendBrevoEmail({
             to: normalizedEmail,
+            name: user.name || "there",
             subject: "Reset your CollabNotes password",
-            text:
+
+            textContent:
                 `Hello ${user.name || "there"},\n\n` +
                 `We received a request to reset your CollabNotes password.\n\n` +
                 `Click the link below to create a new password:\n` +
@@ -911,48 +927,49 @@ app.post("/api/forgot-password", async (req, res) => {
                 `This link will expire in 15 minutes.\n\n` +
                 `If you did not request a password reset, you can safely ignore this email.\n\n` +
                 `— CollabNotes`,
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px;">
-                    <h2>Reset your CollabNotes password</h2>
 
-                    <p>Hello ${user.name || "there"},</p>
+            htmlContent: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px;">
+            <h2>Reset your CollabNotes password</h2>
 
-                    <p>
-                        We received a request to reset your CollabNotes password.
-                    </p>
+            <p>Hello ${user.name || "there"},</p>
 
-                    <p>
-                        Click the button below to create a new password:
-                    </p>
+            <p>
+                We received a request to reset your CollabNotes password.
+            </p>
 
-                    <p>
-                        <a
-                            href="${resetLink}"
-                            style="
-                                display: inline-block;
-                                padding: 12px 20px;
-                                background: #6d5dfc;
-                                color: white;
-                                text-decoration: none;
-                                border-radius: 8px;
-                            "
-                        >
-                            Reset Password
-                        </a>
-                    </p>
+            <p>
+                Click the button below to create a new password:
+            </p>
 
-                    <p>
-                        This link will expire in <strong>15 minutes</strong>.
-                    </p>
+            <p>
+                <a
+                    href="${resetLink}"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background: #6d5dfc;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                    "
+                >
+                    Reset Password
+                </a>
+            </p>
 
-                    <p>
-                        If you did not request a password reset, you can safely
-                        ignore this email.
-                    </p>
+            <p>
+                This link will expire in <strong>15 minutes</strong>.
+            </p>
 
-                    <p>— CollabNotes</p>
-                </div>
-            `
+            <p>
+                If you did not request a password reset, you can safely
+                ignore this email.
+            </p>
+
+            <p>— CollabNotes</p>
+        </div>
+    `
         });
 
         res.json({
