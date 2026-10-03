@@ -1,0 +1,164 @@
+[
+  {
+    "id": 1,
+    "title": "Machine Learning Roadmap",
+    "content": "Learn Python, NumPy, Pandas, Statistics and Machine Learning..",
+    "folder": "Machine Learning",
+    "favorite": true,
+    "updatedAt": "Just now",
+    "ownerEmail": "demo@collabnotes.com"
+  },
+  {
+    "id": 2,
+    "title": "DBMS Notes",
+    "content": "Database normalization, SQL, transactions and indexing..",
+    "folder": "College",
+    "favorite": false,
+    "updatedAt": "Just now",
+    "ownerEmail": "demo@collabnotes.com"
+  },
+  {
+    "id": 3,
+    "title": "Hackathon Ideas",
+    "content": "Ideas for upcoming hackathon projects.",
+    "folder": "Projects",
+    "favorite": false,
+    "updatedAt": "2 days ago",
+    "ownerEmail": "demo@collabnotes.com",
+    "favoriteBy": []
+  },
+  {
+    "id": 1789534581469,
+    "title": "OOP",
+    "content": "object",
+    "folder": "General",
+    "favorite": false,
+    "visibility": "private",
+    "ownerEmail": "demo@collabnotes.com",
+    "updatedAt": "Just now",
+    "file": {
+      "name": "Cluster.pdf",
+      "type": "application/pdf",
+      "url": "/uploads/1789534581446-511739586.pdf"
+    }
+  },
+  {
+    "id": 1790790028650,
+    "title": "ML",
+    "content": "nothing",
+    "folder": "General",
+    "favoriteBy": [],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null
+  },
+  {
+    "id": 1790800075883,
+    "title": "CA",
+    "content": "computer architechture",
+    "folder": "General",
+    "favoriteBy": [],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null
+  },
+  {
+    "id": 1790929770419,
+    "title": "Arpan",
+    "content": "nothing.",
+    "folder": "General",
+    "favoriteBy": [
+      "arpanmaiti5820@gmail.com"
+    ],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "public",
+    "updatedAt": "Just now",
+    "file": null,
+    "likedBy": [
+      "arpanmaiti5820@gmail.com",
+      "anchitmaiti11@gmail.com"
+    ]
+  },
+  {
+    "id": 1790929788300,
+    "title": "Arpan",
+    "content": "nothing",
+    "folder": "General",
+    "favoriteBy": [],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null,
+    "trashed": true,
+    "trashedAt": "2026-10-02T08:42:55.974Z"
+  },
+  {
+    "id": 1790954742047,
+    "title": "College",
+    "content": "MCKV",
+    "folder": "General",
+    "favoriteBy": [],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null
+  },
+  {
+    "id": 1790956827026,
+    "title": "test",
+    "content": "..",
+    "folder": "General",
+    "favoriteBy": [],
+    "ownerEmail": "demo@collabnotes.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null
+  },
+  {
+    "id": 1791019213456,
+    "title": "PRIVATE TEST",
+    "content": "This should only be visible to my account.",
+    "folder": "General",
+    "favorite": false,
+    "favoriteBy": [
+      "arpanmaiti5820@gmail.com"
+    ],
+    "ownerEmail": "arpanmaiti5820@gmail.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null,
+    "trashed": false,
+    "likedBy": []
+  },
+  {
+    "id": 1791019941533,
+    "title": "OOP",
+    "content": "jhduhds..",
+    "folder": "General",
+    "favorite": false,
+    "favoriteBy": [],
+    "ownerEmail": "arpanmaiti5820@gmail.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": {
+      "name": "Asg_7_final.pdf",
+      "type": "application/pdf",
+      "url": "/uploads/1791019941517-894257079.pdf"
+    },
+    "trashed": false
+  },
+  {
+    "id": 1791023018308,
+    "title": "DBMS Notes",
+    "content": "..",
+    "folder": "General",
+    "favorite": false,
+    "favoriteBy": [],
+    "ownerEmail": "arpanmaiti5820@gmail.com",
+    "visibility": "private",
+    "updatedAt": "Just now",
+    "file": null
+  }
+]

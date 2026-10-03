@@ -1,0 +1,414 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #080b12;
+    --panel: #0e121b;
+    --card: #111722;
+    --border: #252c3a;
+    --text: #f5f7fb;
+    --muted: #929aaa;
+    --primary: #6d5dfc;
+    --primary-hover: #5b4cf0;
+}
+
+body {
+    font-family: Inter, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* Main layout */
+
+.auth-container {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+}
+
+
+/* Left section */
+
+.hero-section {
+    position: relative;
+    padding: 45px 8%;
+    background:
+        radial-gradient(
+            circle at 70% 30%,
+            rgba(109, 93, 252, 0.15),
+            transparent 35%
+        ),
+        #090c13;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.brand-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--primary);
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.hero-content {
+    max-width: 650px;
+    margin: auto 0;
+}
+
+.eyebrow {
+    color: #8175ff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.hero-content h1 {
+    font-size: clamp(42px, 5vw, 72px);
+    line-height: 1.03;
+    letter-spacing: -3px;
+    max-width: 700px;
+}
+
+.hero-content h1 span {
+    display: block;
+    color: #8175ff;
+}
+
+.hero-description {
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-top: 25px;
+}
+
+.feature-list {
+    margin-top: 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.feature {
+    display: flex;
+    gap: 15px;
+}
+
+.feature > span {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgba(109, 93, 252, 0.15);
+    color: #938aff;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.feature strong {
+    font-size: 14px;
+}
+
+.feature p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.hero-footer {
+    color: #5e6574;
+    font-size: 12px;
+}
+
+
+/* Right section */
+
+.form-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: var(--panel);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.form-header {
+    margin-bottom: 30px;
+}
+
+.form-header h2 {
+    font-size: 31px;
+    letter-spacing: -1px;
+}
+
+.form-header p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 9px;
+}
+
+
+/* Inputs */
+
+.input-group {
+    margin-bottom: 19px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label-row a {
+    color: #8278ff;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+input {
+    width: 100%;
+    height: 50px;
+    background: #0a0e16;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    outline: none;
+    color: white;
+    padding: 0 14px;
+    transition: 0.2s;
+}
+
+input::placeholder {
+    color: #5d6575;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.1);
+}
+
+
+/* Password */
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 65px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #8177ff;
+    font-size: 12px;
+}
+
+
+/* Buttons */
+
+.primary-btn {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 9px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.google-btn {
+    width: 100%;
+    height: 50px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: #151a24;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.google-btn:hover {
+    background: #1b2230;
+    border-color: #6d5dfc;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(109, 93, 252, 0.18);
+}
+
+.google-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(109, 93, 252, 0.12);
+}
+
+.google-btn svg {
+    width: 19px;
+    height: 19px;
+    transition: transform 0.25s ease;
+}
+
+.google-btn:hover svg {
+    transform: scale(1.08);
+}
+
+.google-btn svg {
+    width: 19px;
+    height: 19px;
+}
+
+
+/* Divider */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 23px 0;
+    color: #5c6473;
+    font-size: 11px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    height: 1px;
+    background: var(--border);
+    flex: 1;
+}
+
+
+/* Switch */
+
+.switch-text {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 25px;
+}
+
+.switch-text button {
+    background: none;
+    border: none;
+    color: #8a80ff;
+    font-weight: 700;
+}
+
+
+/* Messages */
+
+.message {
+    min-height: 18px;
+    margin: -4px 0 12px;
+    font-size: 12px;
+}
+
+.message.success {
+    color: #55d69a;
+}
+
+.message.error {
+    color: #ff6d7a;
+}
+
+
+/* Mobile brand */
+
+.mobile-brand {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    margin-bottom: 45px;
+}
+
+
+/* Utilities */
+
+.hidden {
+    display: none;
+}
+
+
+/* Responsive */
+
+@media (max-width: 900px) {
+
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-section {
+        display: none;
+    }
+
+    .form-section {
+        min-height: 100vh;
+    }
+
+    .mobile-brand {
+        display: flex;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .form-section {
+        padding: 25px 20px;
+    }
+
+    .form-header h2 {
+        font-size: 27px;
+    }
+}

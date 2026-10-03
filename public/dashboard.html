@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CollabNotes | Dashboard</title>
+
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        <span>CollabNotes</span>
+      </div>
+
+      <nav>
+        <p class="nav-title">WORKSPACE</p>
+
+        <button class="nav-item active" id="allNotesBtn">
+          <span>📌</span>
+          All Notes
+        </button>
+
+        <button class="nav-item" id="myNotesBtn">
+          <span>👤</span>
+          My Notes
+        </button>
+
+        <button class="nav-item" id="favoritesBtn">
+          <span>⭐</span>
+          Favorites
+        </button>
+
+        <button class="nav-item" id="trashBtn">
+          <span>🗑</span>
+          Trash
+        </button>
+
+        <p class="nav-title">FOLDERS</p>
+
+        <button class="nav-item folder-btn">
+          <span>📁</span>
+          College
+        </button>
+
+        <button class="nav-item folder-btn">
+          <span>📁</span>
+          Machine Learning
+        </button>
+
+        <button class="nav-item folder-btn">
+          <span>📁</span>
+          Projects
+        </button>
+
+        <button class="nav-item folder-btn">
+          <span>📁</span>
+          Web Development
+        </button>
+
+        <button class="new-folder" id="newFolderBtn" type="button">
+          + New Folder
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="user">
+          <div class="avatar" id="userAvatar">A</div>
+
+          <div>
+            <strong id="sidebarUserName"></strong>
+            <small>My Workspace</small>
+          </div>
+        </div>
+      </div>
+
+      <button class="sidebar-logout-btn" id="sidebarLogoutBtn">
+        ↪ Logout
+      </button>
+  </aside>
+
+  <!-- Main -->
+
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+
+        <div class="mobile-logo">✦ CollabNotes</div>
+      </div>
+      <div class="search-box">
+        <span>⌕</span>
+
+        <input type="text" id="searchInput" placeholder="Search notes..." />
+        <button type="button" id="clearSearchBtn" class="clear-search-btn hidden" aria-label="Clear search">
+          ×
+        </button>
+
+        <kbd>Ctrl K</kbd>
+      </div>
+
+      <div class="top-actions">
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notificationBtn" type="button">
+            🔔
+            <span class="notification-badge hidden" id="notificationBadge">
+              0
+            </span>
+          </button>
+
+          <div class="notification-panel hidden" id="notificationPanel">
+            <div class="notification-header">
+              <div>
+                <strong>Notifications</strong>
+                <small id="notificationCount">0 unread</small>
+              </div>
+
+              <button id="clearNotificationsBtn" type="button">
+                Clear
+              </button>
+            </div>
+
+            <div class="notification-list" id="notificationList"></div>
+          </div>
+        </div>
+
+        <div class="top-avatar" id="topAvatar">A</div>
+
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="welcome">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+
+          <h1>
+            Good evening, <span id="welcomeUserName"></span> 👋
+          </h1>
+
+          <p>Organize your ideas and keep your work moving.</p>
+        </div>
+
+        <button class="create-btn" id="createNoteBtn">+ New Note</button>
+      </div>
+
+      <!-- Statistics -->
+
+      <div class="stats">
+        <div class="stat-card">
+          <span>📄</span>
+
+          <div>
+            <strong id="totalNotes"> 0 </strong>
+
+            <small>Total Notes</small>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span>⭐</span>
+
+          <div>
+            <strong id="favoriteNotes"> 0 </strong>
+
+            <small>Favorites</small>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span>📁</span>
+
+          <div>
+            <strong id="folderCount">0</strong>
+
+            <small>Folders</small>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span>👥</span>
+
+          <div>
+            <strong id="sharedNotes">0</strong>
+
+            <small>Shared</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+
+      <div class="section-header">
+        <div>
+          <h2 id="notesHeading">Recent Notes</h2>
+
+          <p>Your latest notes and ideas.</p>
+        </div>
+      </div>
+
+      <div class="notes-grid" id="notesGrid"></div>
+    </section>
+  </main>
+  </div>
+
+  <!-- Create/Edit Modal -->
+
+  <div class="modal hidden" id="noteModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create New Note</h2>
+
+        <button type="button" id="closeModal">✕</button>
+      </div>
+
+      <form id="noteForm">
+        <label> Note title </label>
+
+        <input type="text" id="noteTitle" placeholder="Enter note title" required />
+        <div class="title-counter">
+          <span id="titleCharacterCount">0</span> / 100 characters
+        </div>
+
+        <label> Folder </label>
+
+        <select id="noteFolder">
+          <option>General</option>
+          <option>College</option>
+          <option>Machine Learning</option>
+          <option>Projects</option>
+          <option>Web Development</option>
+        </select>
+        <div class="visibility-section">
+          <label>Visibility</label>
+
+          <div class="visibility-options">
+            <label class="visibility-option">
+              <input type="radio" name="visibility" value="private" checked />
+
+              <div>
+                <strong>🔒 Private</strong>
+                <small>Only you can access this note.</small>
+              </div>
+            </label>
+
+            <label class="visibility-option">
+              <input type="radio" name="visibility" value="public" />
+
+              <div>
+                <strong>🌐 Public</strong>
+                <small>Anyone can search and view this note.</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <label> Content </label>
+
+        <textarea id="noteContent" placeholder="Write your note..." required></textarea>
+        <div class="character-counter">
+          <span id="characterCount">0</span> characters
+        </div>
+        <div class="attachment-section">
+          <label> Attachment </label>
+
+          <div class="attachment-box">
+            <input type="file" id="noteFile" accept="image/*,.pdf" />
+
+            <span> 🖼️ Image or 📄 PDF </span>
+
+            <small> Upload an image or PDF with your note </small>
+          </div>
+
+          <div id="filePreview" class="file-preview"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" id="cancelModal">
+            Cancel
+          </button>
+
+          <button type="submit" class="save-btn">Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Unsaved Changes Confirmation Modal -->
+
+  <div class="confirm-modal hidden" id="confirmModal">
+    <div class="confirm-card">
+      <div class="confirm-icon">⚠️</div>
+
+      <h2>Unsaved Changes</h2>
+
+      <p>You have unsaved changes. Are you sure you want to close?</p>
+
+      <div class="confirm-actions">
+        <button type="button" class="confirm-cancel-btn" id="confirmCancelBtn">
+          Keep Editing
+        </button>
+
+        <button type="button" class="confirm-discard-btn" id="confirmDiscardBtn">
+          Discard Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Viewer -->
+
+  <div class="viewer-modal hidden" id="viewerModal">
+    <div class="viewer-card">
+      <div class="viewer-header">
+        <div>
+          <h2 id="viewerTitle">Note</h2>
+
+          <span id="viewerVisibility"></span>
+        </div>
+
+        <button type="button" id="closeViewer" onclick="
+              document.getElementById('viewerModal').classList.add('hidden')
+            ">
+          ✕
+        </button>
+      </div>
+
+      <div class="viewer-content">
+        <div id="viewerText" class="viewer-text"></div>
+
+        <div id="viewerFile" class="viewer-file"></div>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <!-- New Folder Modal -->
+  <div class="folder-modal hidden" id="folderModal">
+    <div class="folder-modal-box">
+      <button class="folder-modal-close" id="folderModalClose">×</button>
+
+      <div class="folder-modal-icon">📁</div>
+
+      <h2>Create New Folder</h2>
+
+      <p>Organize your notes by creating a new folder.</p>
+
+      <form id="folderForm">
+        <label for="folderNameInput"> Folder Name </label>
+
+        <input type="text" id="folderNameInput" placeholder="e.g. College Notes" maxlength="50" autocomplete="off" />
+
+        <div class="folder-modal-actions">
+          <button type="button" class="folder-cancel-btn" id="folderCancelBtn">
+            Cancel
+          </button>
+
+          <button type="submit" class="folder-create-btn">
+            Create Folder
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const mobileMenuButton = document.getElementById("menuToggle");
+    const mobileSidebar = document.querySelector(".sidebar");
+
+    mobileMenuButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      mobileSidebar.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function (event) {
+      if (
+        mobileSidebar.classList.contains("open") &&
+        !mobileSidebar.contains(event.target) &&
+        !mobileMenuButton.contains(event.target)
+      ) {
+        mobileSidebar.classList.remove("open");
+      }
+    });
+  </script>
+  <script src="dashboard.js"></script>
+</body>
+
+</html>

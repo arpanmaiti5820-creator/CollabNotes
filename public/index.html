@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CollabNotes | Login</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="auth-container">
+
+        <!-- Left side -->
+        <section class="hero-section">
+
+            <div class="brand">
+                <div class="brand-icon">✦</div>
+                <span>CollabNotes</span>
+            </div>
+
+            <div class="hero-content">
+
+                <p class="eyebrow">YOUR IDEAS. YOUR WORKSPACE.</p>
+
+                <h1>
+                    Everything you need
+                    <span>to work together.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Create, organize and collaborate on your notes
+                    from one beautiful workspace.
+                </p>
+
+                <div class="feature-list">
+
+                    <div class="feature">
+                        <span>✓</span>
+                        <div>
+                            <strong>Organize everything</strong>
+                            <p>Keep your notes structured and accessible.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        <div>
+                            <strong>Collaborate easily</strong>
+                            <p>Share ideas and work together with your team.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        <div>
+                            <strong>Never lose your work</strong>
+                            <p>Keep your important ideas in one place.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="hero-footer">
+                © 2026 CollabNotes
+            </div>
+
+        </section>
+
+
+        <!-- Right side -->
+        <section class="form-section">
+
+            <div class="auth-card">
+
+                <div class="mobile-brand">
+                    <div class="brand-icon">✦</div>
+                    <span>CollabNotes</span>
+                </div>
+
+                <div class="form-header">
+                    <h2 id="formTitle">Welcome back</h2>
+
+                    <p id="formSubtitle">
+                        Sign in to continue to your workspace.
+                    </p>
+                </div>
+
+
+                <!-- Login form -->
+                <form id="loginForm">
+
+                    <div class="input-group">
+
+                        <label for="loginEmail">
+                            Email address
+                        </label>
+
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <div class="label-row">
+
+                            <label for="loginPassword">
+                                Password
+                            </label>
+
+                            <a href="#" id="forgotPassword">
+                                Forgot password?
+                            </a>
+
+                        </div>
+
+                        <div class="password-wrapper">
+
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+                            <button type="button" class="password-toggle" data-target="loginPassword">
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="loginMessage" class="message"></div>
+
+
+                    <button type="submit" class="primary-btn">
+                        Sign in
+                    </button>
+
+                </form>
+
+
+                <!-- Signup form -->
+                <form id="signupForm" class="hidden">
+
+                    <div class="input-group">
+
+                        <label for="signupName">
+                            Full name
+                        </label>
+
+                        <input type="text" id="signupName" placeholder="Your Name" required>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="signupEmail">
+                            Email address
+                        </label>
+
+                        <input type="email" id="signupEmail" placeholder="you@example.com" required>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="signupPassword">
+                            Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input type="password" id="signupPassword" placeholder="At least 6 characters" required>
+
+                            <button type="button" class="password-toggle" data-target="signupPassword">
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="signupMessage" class="message"></div>
+
+
+                    <button type="submit" class="primary-btn">
+                        Create account
+                    </button>
+
+                </form>
+
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+
+                <button class="google-btn" id="googleBtn">
+
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M21.35 12.27c0-.79-.07-1.54-.22-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 21.5c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.75 9.75 0 0 0 12 21.5z"
+                            fill="#34A853" />
+                        <path d="M6.54 13.58a5.86 5.86 0 0 1 0-3.16V7.89H3.3a9.75 9.75 0 0 0 0 8.22l3.24-2.53z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 6.39c1.43 0 2.72.49 3.73 1.46l2.8-2.8C16.84 3.43 14.63 2.5 12 2.5a9.75 9.75 0 0 0-8.7 5.39l3.24 2.53C7.31 8.11 9.46 6.39 12 6.39z"
+                            fill="#EA4335" />
+                    </svg>
+
+                    Continue with Google
+
+                </button>
+
+
+                <p class="switch-text">
+
+                    <span id="switchMessage">
+                        Don't have an account?
+                    </span>
+
+                    <button id="switchMode">
+                        Create account
+                    </button>
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
