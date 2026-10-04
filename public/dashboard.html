@@ -45,26 +45,6 @@
 
         <p class="nav-title">FOLDERS</p>
 
-        <button class="nav-item folder-btn">
-          <span>📁</span>
-          College
-        </button>
-
-        <button class="nav-item folder-btn">
-          <span>📁</span>
-          Machine Learning
-        </button>
-
-        <button class="nav-item folder-btn">
-          <span>📁</span>
-          Projects
-        </button>
-
-        <button class="nav-item folder-btn">
-          <span>📁</span>
-          Web Development
-        </button>
-
         <button class="new-folder" id="newFolderBtn" type="button">
           + New Folder
         </button>
@@ -84,131 +64,131 @@
       <button class="sidebar-logout-btn" id="sidebarLogoutBtn">
         ↪ Logout
       </button>
-  </aside>
+    </aside>
 
-  <!-- Main -->
+    <!-- Main -->
 
-  <main class="main">
-    <header class="topbar">
-      <div class="mobile-header">
-        <button class="menu-toggle" id="menuToggle">☰</button>
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-header">
+          <button class="menu-toggle" id="menuToggle">☰</button>
 
-        <div class="mobile-logo">✦ CollabNotes</div>
-      </div>
-      <div class="search-box">
-        <span>⌕</span>
+          <div class="mobile-logo">✦ CollabNotes</div>
+        </div>
+        <div class="search-box">
+          <span>⌕</span>
 
-        <input type="text" id="searchInput" placeholder="Search notes..." />
-        <button type="button" id="clearSearchBtn" class="clear-search-btn hidden" aria-label="Clear search">
-          ×
-        </button>
-
-        <kbd>Ctrl K</kbd>
-      </div>
-
-      <div class="top-actions">
-        <div class="notification-wrapper">
-          <button class="icon-btn" id="notificationBtn" type="button">
-            🔔
-            <span class="notification-badge hidden" id="notificationBadge">
-              0
-            </span>
+          <input type="text" id="searchInput" placeholder="Search notes..." />
+          <button type="button" id="clearSearchBtn" class="clear-search-btn hidden" aria-label="Clear search">
+            ×
           </button>
 
-          <div class="notification-panel hidden" id="notificationPanel">
-            <div class="notification-header">
-              <div>
-                <strong>Notifications</strong>
-                <small id="notificationCount">0 unread</small>
+          <kbd>Ctrl K</kbd>
+        </div>
+
+        <div class="top-actions">
+          <div class="notification-wrapper">
+            <button class="icon-btn" id="notificationBtn" type="button">
+              🔔
+              <span class="notification-badge hidden" id="notificationBadge">
+                0
+              </span>
+            </button>
+
+            <div class="notification-panel hidden" id="notificationPanel">
+              <div class="notification-header">
+                <div>
+                  <strong>Notifications</strong>
+                  <small id="notificationCount">0 unread</small>
+                </div>
+
+                <button id="clearNotificationsBtn" type="button">
+                  Clear
+                </button>
               </div>
 
-              <button id="clearNotificationsBtn" type="button">
-                Clear
-              </button>
+              <div class="notification-list" id="notificationList"></div>
             </div>
-
-            <div class="notification-list" id="notificationList"></div>
           </div>
+
+          <div class="top-avatar" id="topAvatar">A</div>
+
+          <button class="logout-btn" id="logoutBtn">Logout</button>
         </div>
+      </header>
 
-        <div class="top-avatar" id="topAvatar">A</div>
-
-        <button class="logout-btn" id="logoutBtn">Logout</button>
-      </div>
-    </header>
-
-    <section class="content">
-      <div class="welcome">
-        <div>
-          <p class="eyebrow">YOUR WORKSPACE</p>
-
-          <h1>
-            Good evening, <span id="welcomeUserName"></span> 👋
-          </h1>
-
-          <p>Organize your ideas and keep your work moving.</p>
-        </div>
-
-        <button class="create-btn" id="createNoteBtn">+ New Note</button>
-      </div>
-
-      <!-- Statistics -->
-
-      <div class="stats">
-        <div class="stat-card">
-          <span>📄</span>
-
+      <section class="content">
+        <div class="welcome">
           <div>
-            <strong id="totalNotes"> 0 </strong>
+            <p class="eyebrow">YOUR WORKSPACE</p>
 
-            <small>Total Notes</small>
+            <h1>
+              Good evening, <span id="welcomeUserName"></span> 👋
+            </h1>
+
+            <p>Organize your ideas and keep your work moving.</p>
+          </div>
+
+          <button class="create-btn" id="createNoteBtn">+ New Note</button>
+        </div>
+
+        <!-- Statistics -->
+
+        <div class="stats">
+          <div class="stat-card">
+            <span>📄</span>
+
+            <div>
+              <strong id="totalNotes"> 0 </strong>
+
+              <small>Total Notes</small>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span>⭐</span>
+
+            <div>
+              <strong id="favoriteNotes"> 0 </strong>
+
+              <small>Favorites</small>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span>📁</span>
+
+            <div>
+              <strong id="folderCount">0</strong>
+
+              <small>Folders</small>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span>👥</span>
+
+            <div>
+              <strong id="sharedNotes">0</strong>
+
+              <small>Shared</small>
+            </div>
           </div>
         </div>
 
-        <div class="stat-card">
-          <span>⭐</span>
+        <!-- Notes -->
 
+        <div class="section-header">
           <div>
-            <strong id="favoriteNotes"> 0 </strong>
+            <h2 id="notesHeading">Recent Notes</h2>
 
-            <small>Favorites</small>
+            <p>Your latest notes and ideas.</p>
           </div>
         </div>
 
-        <div class="stat-card">
-          <span>📁</span>
-
-          <div>
-            <strong id="folderCount">0</strong>
-
-            <small>Folders</small>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <span>👥</span>
-
-          <div>
-            <strong id="sharedNotes">0</strong>
-
-            <small>Shared</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notes -->
-
-      <div class="section-header">
-        <div>
-          <h2 id="notesHeading">Recent Notes</h2>
-
-          <p>Your latest notes and ideas.</p>
-        </div>
-      </div>
-
-      <div class="notes-grid" id="notesGrid"></div>
-    </section>
-  </main>
+        <div class="notes-grid" id="notesGrid"></div>
+      </section>
+    </main>
   </div>
 
   <!-- Create/Edit Modal -->
@@ -387,6 +367,39 @@
       }
     });
   </script>
+
+  <!-- Delete Folder Confirmation Modal -->
+  <div class="delete-folder-modal" id="deleteFolderModal">
+    <div class="delete-folder-modal-card">
+
+      <div class="delete-folder-icon">
+        🗑️
+      </div>
+
+      <h3>Delete Folder?</h3>
+
+      <p>
+        Are you sure you want to delete
+        <strong id="deleteFolderName"></strong>?
+      </p>
+
+      <p class="delete-folder-warning">
+        Any notes inside this folder will be moved to
+        <strong>General</strong>.
+      </p>
+
+      <div class="delete-folder-modal-actions">
+        <button type="button" class="delete-folder-cancel" id="cancelDeleteFolder">
+          Cancel
+        </button>
+
+        <button type="button" class="delete-folder-confirm" id="confirmDeleteFolder">
+          Delete Folder
+        </button>
+      </div>
+
+    </div>
+  </div>
   <script src="dashboard.js"></script>
 </body>
 

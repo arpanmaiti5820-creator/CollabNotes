@@ -43,6 +43,9 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("./models/User");
+const Note = require("./models/Note");
+const Folder = require("./models/Folder");
+
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const GOOGLE_CLIENT_ID = "499493306852-58v9ssight19i3m0trg3fd5tlo3f6i7d.apps.googleusercontent.com";
@@ -94,17 +97,21 @@ function authenticateToken(req, res, next) {
 
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => {
+    .then(async () => {
 
         console.log("MongoDB connected successfully");
+
+        // Migrate existing JSON data to MongoDB
+        await migrateDataToMongoDB();
+
         app.listen(PORT, "0.0.0.0", () => {
             console.log(`CollabNotes running on port ${PORT}`);
         });
+
     })
     .catch((error) => {
         console.error("MongoDB connection failed:", error.message);
     });
-// ==============================
 // File Upload Configuration
 // ==============================
 
@@ -168,7 +175,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const notesFile = path.join(__dirname, "data", "notes.json");
-const foldersFile =path.join(__dirname, "data", "folders.json");
+const foldersFile = path.join(__dirname, "data", "folders.json");
 // ==============================
 // Initialize data storage
 // ==============================
@@ -252,190 +259,400 @@ function saveFolders(folders) {
     console.log("Folders saved successfully");
 }
 
+// ==============================
+// Migrate JSON data to MongoDB
+// ==============================
 
+async function migrateDataToMongoDB() {
+
+    try {
+
+        // ------------------------------
+        // Migrate Notes
+        // ------------------------------
+
+        const existingNotes = getNotes();
+
+        if (existingNotes.length > 0) {
+
+            for (const note of existingNotes) {
+
+                const alreadyExists = await Note.findOne({
+                    id: note.id
+                });
+
+                if (!alreadyExists) {
+
+                    await Note.create(note);
+
+                    console.log(
+                        `Migrated note: ${note.title}`
+                    );
+                }
+            }
+
+            console.log(
+                `Notes migration checked: ${existingNotes.length} notes`
+            );
+        }
+
+
+        // ------------------------------
+        // Migrate Folders
+        // ------------------------------
+
+        const existingFolders = getFolders();
+
+        if (existingFolders.length > 0) {
+
+            for (const folder of existingFolders) {
+
+                const alreadyExists = await Folder.findOne({
+                    id: folder.id
+                });
+
+                if (!alreadyExists) {
+
+                    await Folder.create(folder);
+
+                    console.log(
+                        `Migrated folder: ${folder.name}`
+                    );
+                }
+            }
+
+            console.log(
+                `Folders migration checked: ${existingFolders.length} folders`
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "MongoDB migration error:",
+            error
+        );
+
+    }
+}
 // ==============================
 // Get folders
 // ==============================
 
-app.get("/api/folders", authenticateToken, (req, res) => {
+// ==============================
+// Get Folders
+// ==============================
 
-    const folders = getFolders();
+app.get("/api/folders", authenticateToken, async (req, res) => {
 
-    // Get the logged-in user's email from JWT
-    const userEmail = req.user.email;
+    try {
 
-    const userFolders = folders.filter(
-        folder => folder.ownerEmail === userEmail
-    );
+        const userEmail = req.user.email;
 
-    res.json(userFolders);
+        const folders = await Folder.find({
+            ownerEmail: userEmail
+        }).sort({ createdAt: 1 });
+
+        res.json(folders);
+
+    } catch (error) {
+
+        console.error("Get folders error:", error);
+
+        res.status(500).json({
+            message: "Failed to load folders."
+        });
+    }
 });
-
 
 // ==============================
 // Create folder
 // ==============================
-app.post("/api/folders", authenticateToken, (req, res) => {
+// ==============================
+// Create Folder
+// ==============================
 
-    const folders = getFolders();
+app.post("/api/folders", authenticateToken, async (req, res) => {
 
-    const { name } = req.body;
+    try {
 
-    // Get owner from verified JWT
-    const ownerEmail = req.user.email;
+        const { name } = req.body;
 
-    if (!name) {
-        return res.status(400).json({
-            message: "Folder name is required."
+        // Get owner from verified JWT
+        const ownerEmail = req.user.email;
+
+        if (!name) {
+            return res.status(400).json({
+                message: "Folder name is required."
+            });
+        }
+
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            return res.status(400).json({
+                message: "Folder name cannot be empty."
+            });
+        }
+
+        // Check if folder already exists for this user
+        const existingFolders = await Folder.find({
+            ownerEmail: ownerEmail
+        });
+
+        const existingFolder = existingFolders.find(
+            folder =>
+                folder.name.toLowerCase() === trimmedName.toLowerCase()
+        );
+
+        if (existingFolder) {
+            return res.status(409).json({
+                message: "This folder already exists."
+            });
+        }
+
+        const newFolder = await Folder.create({
+            id: Date.now(),
+            name: trimmedName,
+            ownerEmail: ownerEmail
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Folder created successfully.",
+            folder: newFolder
+        });
+
+    } catch (error) {
+
+        console.error("Create folder error:", error);
+
+        res.status(500).json({
+            message: "Failed to create folder."
         });
     }
-
-    const trimmedName = name.trim();
-
-    if (!trimmedName) {
-        return res.status(400).json({
-            message: "Folder name cannot be empty."
-        });
-    }
-
-    const existingFolder = folders.find(
-        folder =>
-            folder.name.toLowerCase() === trimmedName.toLowerCase() &&
-            folder.ownerEmail === ownerEmail
-    );
-
-    if (existingFolder) {
-        return res.status(409).json({
-            message: "This folder already exists."
-        });
-    }
-
-    const newFolder = {
-        id: Date.now(),
-        name: trimmedName,
-        ownerEmail: ownerEmail,
-        createdAt: new Date().toISOString()
-    };
-
-    folders.push(newFolder);
-
-    saveFolders(folders);
-
-    res.status(201).json({
-        success: true,
-        message: "Folder created successfully.",
-        folder: newFolder
-    });
 });
 // ==============================
-// Get all notes
+// Delete folder
 // ==============================
 
-app.get("/api/notes", authenticateToken, (req, res) => {
-    const notes = getNotes();
+app.delete("/api/folders/:id", authenticateToken, async (req, res) => {
 
-    const userEmail = req.user.email;
+    try {
 
-    // Never return trashed notes in the normal notes list
-    const activeNotes = notes.filter(note => !note.trashed);
+        const id = Number(req.params.id);
+        const userEmail = req.user.email;
 
-    // If no user email is provided,
-    // return only public active notes
-    if (!userEmail) {
-        return res.json(
-            activeNotes.filter(note => note.visibility === "public")
+        const folder = await Folder.findOne({
+            id: id,
+            ownerEmail: userEmail
+        });
+
+        if (!folder) {
+            return res.status(404).json({
+                success: false,
+                message: "Folder not found."
+            });
+        }
+
+        // General folder cannot be deleted
+        if (folder.name.toLowerCase() === "general") {
+            return res.status(400).json({
+                success: false,
+                message: "The General folder cannot be deleted."
+            });
+        }
+
+        // Move notes inside this folder back to General
+        await Note.updateMany(
+            {
+                folder: folder.name,
+                ownerEmail: userEmail
+            },
+            {
+                $set: {
+                    folder: "General"
+                }
+            }
         );
+
+        // Delete the folder
+        await Folder.deleteOne({
+            id: id,
+            ownerEmail: userEmail
+        });
+
+        res.json({
+            success: true,
+            message: "Folder deleted successfully."
+        });
+
+    } catch (error) {
+
+        console.error("Delete folder error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete folder."
+        });
     }
+});
+// ==============================
+// Get Notes
+// ==============================
 
-    // Logged-in user can see:
-    // 1. All active public notes
-    // 2. Their own active private notes
-    const visibleNotes = activeNotes.filter(note =>
-        note.visibility === "public" ||
-        note.ownerEmail === userEmail
-    );
+app.get("/api/notes", authenticateToken, async (req, res) => {
 
-    res.json(visibleNotes);
+    try {
+
+        const userEmail = req.user.email;
+
+        const notes = await Note.find({
+            trashed: { $ne: true },
+            $or: [
+                {
+                    visibility: "public"
+                },
+                {
+                    ownerEmail: userEmail
+                }
+            ]
+        }).sort({
+            updatedAt: -1
+        });
+
+        res.json(notes);
+
+    } catch (error) {
+
+        console.error("Get notes error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to load notes."
+        });
+    }
 });
 
 // ==============================
 // Get trashed notes
 // ==============================
+// ==============================
+// Get trashed notes
+// ==============================
 
-app.get("/api/notes/trash", authenticateToken, (req, res) => {
+app.get("/api/notes/trash", authenticateToken, async (req, res) => {
 
-    const notes = getNotes();
+    try {
 
-    const userEmail = req.user.email;
+        const userEmail = req.user.email;
 
-    if (!userEmail) {
-        return res.status(401).json({
-            message: "Please login first."
+        if (!userEmail) {
+            return res.status(401).json({
+                success: false,
+                message: "Please login first."
+            });
+        }
+
+        // Get user's trashed notes from MongoDB
+        const trashNotes = await Note.find({
+            trashed: true,
+            ownerEmail: userEmail
+        }).sort({
+            trashedAt: -1
+        });
+
+        res.json(trashNotes);
+
+    } catch (error) {
+
+        console.error("Get trash notes error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to load trash."
         });
     }
-
-    const trashNotes = notes.filter(note =>
-        note.trashed === true &&
-        note.ownerEmail === userEmail
-    );
-
-    res.json(trashNotes);
 });
 
 // ==============================
 // Get single note
 // ==============================
 
-app.get("/api/notes/:id", authenticateToken, (req, res) => {
-    const notes = getNotes();
+// ==============================
+// Get single note
+// ==============================
 
-    const id = Number(req.params.id);
-    const userEmail = req.user.email || "";
+app.get("/api/notes/:id", authenticateToken, async (req, res) => {
 
-    const note = notes.find(note => note.id === id);
+    try {
 
-    if (!note) {
-        return res.status(404).json({
-            message: "Note not found."
+        const id = Number(req.params.id);
+
+        const userEmail = req.user.email;
+
+        // Find note in MongoDB
+        const note = await Note.findOne({
+            id: id
+        });
+
+        if (!note) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found."
+            });
+        }
+
+        // Trashed notes cannot be opened
+        if (note.trashed) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found."
+            });
+        }
+
+        // Public notes can be viewed by anyone
+        if (note.visibility === "public") {
+            return res.json(note);
+        }
+
+        // Private notes only belong to their owner
+        if (note.ownerEmail === userEmail) {
+            return res.json(note);
+        }
+
+        return res.status(403).json({
+            success: false,
+            message: "You do not have permission to view this note."
+        });
+
+    } catch (error) {
+
+        console.error("Get single note error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to load note."
         });
     }
-
-    // Trashed notes cannot be opened
-    if (note.trashed) {
-        return res.status(404).json({
-            message: "Note not found."
-        });
-    }
-
-    // Public notes can be viewed by anyone
-    if (note.visibility === "public") {
-        return res.json(note);
-    }
-
-    // Private notes can only be viewed by their owner
-    if (note.ownerEmail === userEmail) {
-        return res.json(note);
-    }
-
-    return res.status(403).json({
-        message: "You do not have permission to view this note."
-    });
 });
-
 
 
 
 // ==============================
 // Create note
 // ==============================
+// ==============================
+// Create Note
+// ==============================
+
 app.post(
     "/api/notes",
     authenticateToken,
     upload.single("file"),
-    (req, res) => {
+    async (req, res) => {
 
         try {
-            const notes = getNotes();
 
             const {
                 title,
@@ -444,9 +661,10 @@ app.post(
                 visibility
             } = req.body;
 
-            // Get owner from JWT
+            // Get owner from verified JWT
             const ownerEmail = req.user.email;
 
+            // Validate required fields
             if (!title || !content) {
                 return res.status(400).json({
                     success: false,
@@ -454,24 +672,37 @@ app.post(
                 });
             }
 
+            // Prepare note
             const newNote = {
                 id: Date.now(),
+
                 title: title.trim(),
+
                 content: content.trim(),
+
                 folder: folder || "General",
+
                 favorite: false,
+
                 favoriteBy: [],
+
                 likedBy: [],
+
                 ownerEmail: ownerEmail,
-                visibility: visibility === "public"
-                    ? "public"
-                    : "private",
+
+                visibility:
+                    visibility === "public"
+                        ? "public"
+                        : "private",
+
                 updatedAt: "Just now",
+
                 file: null
             };
 
             // If a file was uploaded
             if (req.file) {
+
                 newNote.file = {
                     name: req.file.originalname,
                     type: req.file.mimetype,
@@ -479,14 +710,13 @@ app.post(
                 };
             }
 
-            notes.push(newNote);
-
-            saveNotes(notes);
+            // Save directly to MongoDB
+            const savedNote = await Note.create(newNote);
 
             res.status(201).json({
                 success: true,
                 message: "Note created successfully.",
-                note: newNote
+                note: savedNote
             });
 
         } catch (error) {
@@ -502,184 +732,264 @@ app.post(
 );
 
 
+// ==============================
+// Favorite / Unfavorite note
+// ==============================
 
-app.patch("/api/notes/:id/favorite", authenticateToken, (req, res) => {
+app.patch(
+    "/api/notes/:id/favorite",
+    authenticateToken,
+    async (req, res) => {
 
-    const notes = getNotes();
+        try {
 
-    const id = Number(req.params.id);
-    const userEmail = req.user.email;
+            const id = Number(req.params.id);
 
-    const noteIndex = notes.findIndex(
-        note => note.id === id
-    );
+            const userEmail = req.user.email;
 
-    if (noteIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: "Note not found."
-        });
-    }
+            // Find note in MongoDB
+            const note = await Note.findOne({
+                id: id
+            });
 
-    const note = notes[noteIndex];
+            if (!note) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Note not found."
+                });
+            }
 
-    // Only public notes or the user's own private notes
-    // can be favorited.
-    if (
-        note.visibility !== "public" &&
-        note.ownerEmail !== userEmail
-    ) {
-        return res.status(403).json({
-            success: false,
-            message: "You do not have permission to favorite this note."
-        });
-    }
+            // Only public notes or the user's own private notes
+            // can be favorited.
+            if (
+                note.visibility !== "public" &&
+                note.ownerEmail !== userEmail
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message:
+                        "You do not have permission to favorite this note."
+                });
+            }
 
-    // Make sure favoriteBy exists
-    if (!Array.isArray(note.favoriteBy)) {
-        note.favoriteBy = [];
-    }
+            // Make sure favoriteBy exists
+            if (!Array.isArray(note.favoriteBy)) {
+                note.favoriteBy = [];
+            }
 
-    const alreadyFavorite =
-        note.favoriteBy.includes(userEmail);
+            const alreadyFavorite =
+                note.favoriteBy.includes(userEmail);
 
-    if (alreadyFavorite) {
+            if (alreadyFavorite) {
 
-        note.favoriteBy =
-            note.favoriteBy.filter(
-                email => email !== userEmail
+                // Remove favorite
+                note.favoriteBy =
+                    note.favoriteBy.filter(
+                        email => email !== userEmail
+                    );
+
+            } else {
+
+                // Add favorite
+                note.favoriteBy.push(userEmail);
+
+            }
+
+            await note.save();
+
+            res.json({
+                success: true,
+
+                message: alreadyFavorite
+                    ? "Removed from favorites."
+                    : "Added to favorites.",
+
+                favorite: !alreadyFavorite
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Favorite note error:",
+                error
             );
 
-    } else {
-
-        note.favoriteBy.push(userEmail);
-
+            res.status(500).json({
+                success: false,
+                message: "Failed to update favorite."
+            });
+        }
     }
-
-    saveNotes(notes);
-
-    res.json({
-        success: true,
-        message: alreadyFavorite
-            ? "Removed from favorites."
-            : "Added to favorites.",
-        favorite: !alreadyFavorite
-    });
-});
+);
+// ==============================
+// Like / Unlike note
+// ==============================
 
 // ==============================
 // Like / Unlike note
 // ==============================
 
-app.patch("/api/notes/:id/like", authenticateToken, (req, res) => {
+app.patch(
+    "/api/notes/:id/like",
+    authenticateToken,
+    async (req, res) => {
 
-    const notes = getNotes();
+        try {
 
-    const id = Number(req.params.id);
-    const userEmail = req.user.email;
+            const id = Number(req.params.id);
 
-    const noteIndex = notes.findIndex(
-        note => note.id === id
-    );
+            const userEmail = req.user.email;
 
-    if (noteIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: "Note not found."
-        });
+            // Find note in MongoDB
+            const note = await Note.findOne({
+                id: id
+            });
+
+            if (!note) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Note not found."
+                });
+            }
+
+            // Only public notes or the user's own private notes
+            // can be liked.
+            if (
+                note.visibility !== "public" &&
+                note.ownerEmail !== userEmail
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message:
+                        "You do not have permission to like this note."
+                });
+            }
+
+            // Make sure likedBy exists
+            if (!Array.isArray(note.likedBy)) {
+                note.likedBy = [];
+            }
+
+            const alreadyLiked =
+                note.likedBy.includes(userEmail);
+
+            if (alreadyLiked) {
+
+                // Unlike
+                note.likedBy =
+                    note.likedBy.filter(
+                        email => email !== userEmail
+                    );
+
+            } else {
+
+                // Like
+                note.likedBy.push(userEmail);
+
+            }
+
+            await note.save();
+
+            res.json({
+                success: true,
+                liked: !alreadyLiked,
+                likeCount: note.likedBy.length
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Like note error:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to update like."
+            });
+        }
     }
-
-    const note = notes[noteIndex];
-
-    // Only public notes or the user's own private notes
-    // can be liked.
-    if (
-        note.visibility !== "public" &&
-        note.ownerEmail !== userEmail
-    ) {
-        return res.status(403).json({
-            success: false,
-            message: "You do not have permission to like this note."
-        });
-    }
-
-    // Support older notes
-    if (!Array.isArray(note.likedBy)) {
-        note.likedBy = [];
-    }
-
-    const alreadyLiked = note.likedBy.includes(userEmail);
-
-    if (alreadyLiked) {
-
-        // Unlike
-        note.likedBy = note.likedBy.filter(
-            email => email !== userEmail
-        );
-
-    } else {
-
-        // Like
-        note.likedBy.push(userEmail);
-
-    }
-
-    saveNotes(notes);
-
-    res.json({
-        success: true,
-        liked: !alreadyLiked,
-        likeCount: note.likedBy.length
-    });
-});
+);
 
 // ==============================
 // Update note
 // ==============================
-app.put("/api/notes/:id", authenticateToken, (req, res) => {
-    const notes = getNotes();
+// ==============================
+// Update note
+// ==============================
 
-    const index = notes.findIndex(
-        note => note.id === Number(req.params.id)
-    );
+app.put("/api/notes/:id", authenticateToken, async (req, res) => {
 
-    if (index === -1) {
-        return res.status(404).json({
-            message: "Note not found"
+    try {
+
+        const id = Number(req.params.id);
+
+        const userEmail = req.user.email;
+
+        const {
+            title,
+            content,
+            folder,
+            visibility
+        } = req.body;
+
+        // Find note in MongoDB
+        const note = await Note.findOne({
+            id: id
         });
-    }
 
-    const userEmail = req.user.email;
+        if (!note) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found."
+            });
+        }
 
-    // Check ownership
-    if (
-        !userEmail ||
-        notes[index].ownerEmail !== userEmail
-    ) {
-        return res.status(403).json({
+        // Only owner can edit
+        if (note.ownerEmail !== userEmail) {
+            return res.status(403).json({
+                success: false,
+                message: "You can only edit your own notes."
+            });
+        }
+
+        // Update fields
+        if (title) {
+            note.title = title.trim();
+        }
+
+        if (content) {
+            note.content = content.trim();
+        }
+
+        if (folder) {
+            note.folder = folder;
+        }
+
+        if (visibility === "public") {
+            note.visibility = "public";
+        } else if (visibility === "private") {
+            note.visibility = "private";
+        }
+
+        // Mongoose timestamps automatically update updatedAt
+        await note.save();
+
+        res.json({
+            success: true,
+            message: "Note updated successfully.",
+            note: note
+        });
+
+    } catch (error) {
+
+        console.error("Update note error:", error);
+
+        res.status(500).json({
             success: false,
-            message: "You can only edit your own notes."
+            message: "Failed to update note."
         });
     }
-
-    const { title, content, folder, visibility } = req.body;
-
-    notes[index] = {
-        ...notes[index],
-        title: title || notes[index].title,
-        content: content || notes[index].content,
-        folder: folder || notes[index].folder,
-        visibility:
-            visibility === "public"
-                ? "public"
-                : notes[index].visibility,
-        updatedAt: "Just now"
-    };
-
-    saveNotes(notes);
-
-    res.json(notes[index]);
-
 });
 
 
@@ -687,38 +997,59 @@ app.put("/api/notes/:id", authenticateToken, (req, res) => {
 // Delete note
 // ==============================
 
-app.delete("/api/notes/:id", authenticateToken, (req, res) => {
-    const notes = getNotes();
-    const id = Number(req.params.id);
-    const ownerEmail = req.user.email;
+// ==============================
+// Delete note
+// ==============================
 
-    const noteIndex = notes.findIndex(note => note.id === id);
+app.delete("/api/notes/:id", authenticateToken, async (req, res) => {
 
-    if (noteIndex === -1) {
-        return res.status(404).json({
-            message: "Note not found."
+    try {
+
+        const id = Number(req.params.id);
+
+        const ownerEmail = req.user.email;
+
+        // Find note in MongoDB
+        const note = await Note.findOne({
+            id: id
+        });
+
+        if (!note) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found."
+            });
+        }
+
+        // Only owner can delete
+        if (note.ownerEmail !== ownerEmail) {
+            return res.status(403).json({
+                success: false,
+                message: "You cannot delete this note."
+            });
+        }
+
+        // Move note to Trash
+        note.trashed = true;
+
+        note.trashedAt = new Date();
+
+        await note.save();
+
+        res.json({
+            success: true,
+            message: "Note moved to Trash."
+        });
+
+    } catch (error) {
+
+        console.error("Delete note error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete note."
         });
     }
-
-    const note = notes[noteIndex];
-
-    // Only owner can delete
-    if (note.ownerEmail !== ownerEmail) {
-        return res.status(403).json({
-            message: "You cannot delete this note."
-        });
-    }
-
-    // Move note to Trash
-    note.trashed = true;
-    note.trashedAt = new Date().toISOString();
-
-    saveNotes(notes);
-
-    res.json({
-        success: true,
-        message: "Note moved to Trash."
-    });
 });
 
 // ==============================
@@ -1173,106 +1504,148 @@ app.post("/api/google-login", async (req, res) => {
 // Start server
 // ==============================
 
-app.patch("/api/notes/:id/restore", authenticateToken, (req, res) => {
+// ==============================
+// Restore note
+// ==============================
 
-    const notes = getNotes();
+app.patch("/api/notes/:id/restore", authenticateToken, async (req, res) => {
 
-    const id = Number(req.params.id);
+    try {
 
-    const ownerEmail = req.user.email;
+        const id = Number(req.params.id);
 
-    const note = notes.find(
-        note => note.id === id
-    );
+        const ownerEmail = req.user.email;
 
-    if (!note) {
-        return res.status(404).json({
-            message: "Note not found."
+        // Find note in MongoDB
+        const note = await Note.findOne({
+            id: id
+        });
+
+        if (!note) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found."
+            });
+        }
+
+        // Only owner can restore
+        if (note.ownerEmail !== ownerEmail) {
+            return res.status(403).json({
+                success: false,
+                message: "You cannot restore this note."
+            });
+        }
+
+        // Restore note
+        note.trashed = false;
+        note.trashedAt = null;
+
+        await note.save();
+
+        res.json({
+            success: true,
+            message: "Note restored."
+        });
+
+    } catch (error) {
+
+        console.error("Restore note error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to restore note."
         });
     }
-
-    if (note.ownerEmail !== ownerEmail) {
-        return res.status(403).json({
-            message: "You cannot restore this note."
-        });
-    }
-
-    note.trashed = false;
-    delete note.trashedAt;
-
-    saveNotes(notes);
-
-    res.json({
-        success: true,
-        message: "Note restored."
-    });
-
 });
 
-app.delete("/api/notes/:id/permanent", authenticateToken, (req, res) => {
-    console.log("🔥 PERMANENT DELETE ROUTE HIT", req.params.id);
-    const notes = getNotes();
 
-    const id = Number(req.params.id);
+// ==============================
+// Permanently delete note
+// ==============================
 
-    const ownerEmail = req.user.email;
-
-    const noteIndex = notes.findIndex(
-        note => note.id === id
-    );
-
-    if (noteIndex === -1) {
-        return res.status(404).json({
-            message: "Note not found."
-        });
-    }
-
-    const note = notes[noteIndex];
-    console.log("NOTE BEING DELETED:", note);
-    console.log("FILE ATTACHED:", note.file);
-
-    // Only the owner can permanently delete the note
-    if (note.ownerEmail !== ownerEmail) {
-        return res.status(403).json({
-            message: "You cannot delete this note."
-        });
-    }
-
-    // Delete attached file if it exists
-    if (note.file && note.file.url) {
-
-        const filename = path.basename(note.file.url);
-
-        const filePath = path.resolve(
-            __dirname,
-            "uploads",
-            filename
-        );
+app.delete(
+    "/api/notes/:id/permanent",
+    authenticateToken,
+    async (req, res) => {
 
         try {
 
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
+            const id = Number(req.params.id);
+
+            const ownerEmail = req.user.email;
+
+            // Find note in MongoDB
+            const note = await Note.findOne({
+                id: id
+            });
+
+            if (!note) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Note not found."
+                });
             }
+
+            // Only owner can permanently delete
+            if (note.ownerEmail !== ownerEmail) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You cannot delete this note."
+                });
+            }
+
+            // Delete attached file if it exists
+            if (note.file && note.file.url) {
+
+                const filename = path.basename(note.file.url);
+
+                const filePath = path.resolve(
+                    __dirname,
+                    "uploads",
+                    filename
+                );
+
+                try {
+
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+
+                } catch (fileError) {
+
+                    console.error(
+                        "File deletion error:",
+                        fileError
+                    );
+
+                    return res.status(500).json({
+                        success: false,
+                        message: "Could not delete the attached file."
+                    });
+                }
+            }
+
+            // Permanently delete from MongoDB
+            await Note.deleteOne({
+                id: id
+            });
+
+            res.json({
+                success: true,
+                message: "Note permanently deleted."
+            });
 
         } catch (error) {
 
-            console.error("File deletion error:", error);
+            console.error(
+                "Permanent delete error:",
+                error
+            );
 
-            return res.status(500).json({
+            res.status(500).json({
                 success: false,
-                message: "Could not delete the attached file."
+                message: "Failed to permanently delete note."
             });
         }
     }
-
-    // Remove note from notes.json
-    notes.splice(noteIndex, 1);
-
-    saveNotes(notes);
-
-    res.json({
-        success: true,
-        message: "Note permanently deleted."
-    });
-});
+);

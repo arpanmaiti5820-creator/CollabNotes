@@ -3339,3 +3339,271 @@ body {
     transform: translateY(-2px);
   }
 }
+@media (max-width: 700px) {
+
+    .note-card {
+        position: relative;
+    }
+
+    .mobile-like-count {
+        display: block;
+        position: absolute;
+        right: 16px;
+        bottom: 12px;
+        font-size: 13px;
+        color: #aeb7c6;
+    }
+
+    .note-card.mobile-expanded .mobile-like-count {
+        display: none;
+    }
+}
+/* =========================================
+   FOLDER DELETE BUTTON
+========================================= */
+
+.folder-btn {
+    position: relative;
+}
+
+.folder-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.delete-folder-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    border-radius: 6px;
+    z-index: 10;
+}
+
+.delete-folder-btn:hover {
+    background: rgba(255, 80, 80, 0.15);
+}
+/* =========================================
+   DELETE FOLDER CONFIRMATION MODAL
+========================================= */
+
+.delete-folder-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.delete-folder-modal.show {
+    display: flex;
+}
+
+/* Modal card */
+.delete-folder-modal-card {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 28px;
+
+    border-radius: 20px;
+
+    background: #11141c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
+
+    text-align: center;
+
+    animation: deleteModalAppear 0.2s ease-out;
+}
+
+@keyframes deleteModalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Trash icon */
+.delete-folder-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: rgba(255, 80, 100, 0.12);
+    border: 1px solid rgba(255, 80, 100, 0.18);
+
+    font-size: 25px;
+}
+
+/* Heading */
+.delete-folder-modal-card h3 {
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+/* Main text */
+.delete-folder-modal-card p {
+    margin: 0;
+
+    color: #aeb7c6;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.delete-folder-modal-card p strong {
+    color: #ffffff;
+}
+
+/* Warning */
+.delete-folder-warning {
+    margin-top: 8px !important;
+
+    font-size: 13px !important;
+
+    color: #8f98a8 !important;
+}
+
+.delete-folder-warning strong {
+    color: #c6b8ff !important;
+}
+
+/* Buttons container */
+.delete-folder-modal-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+/* Both buttons */
+.delete-folder-modal-actions button {
+    flex: 1;
+
+    height: 44px;
+
+    border: none;
+    border-radius: 11px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Cancel */
+.delete-folder-cancel {
+    color: #c4cbd6;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.delete-folder-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+
+    transform: translateY(-1px);
+}
+
+/* Delete */
+.delete-folder-confirm {
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        #ef4444,
+        #dc2626
+    );
+
+    box-shadow:
+        0 8px 20px rgba(239, 68, 68, 0.18);
+}
+
+.delete-folder-confirm:hover {
+    background: linear-gradient(
+        135deg,
+        #f05252,
+        #e02d2d
+    );
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 10px 25px rgba(239, 68, 68, 0.28);
+}
+
+.delete-folder-confirm:active,
+.delete-folder-cancel:active {
+    transform: scale(0.97);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .delete-folder-modal {
+        padding: 16px;
+    }
+
+    .delete-folder-modal-card {
+        max-width: 100%;
+
+        padding: 24px 20px;
+
+        border-radius: 18px;
+    }
+
+    .delete-folder-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .delete-folder-modal-actions button {
+        width: 100%;
+    }
+}

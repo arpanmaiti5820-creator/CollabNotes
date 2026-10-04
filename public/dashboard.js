@@ -567,10 +567,23 @@ async function loadFolders() {
     }
 
     const folders = await response.json();
+
+    // Remove previously loaded folders
+    document.querySelectorAll(".dynamic-folder").forEach(folder => {
+      folder.remove();
+    });
+
+    // Remove previously loaded folder options
+    noteFolder.querySelectorAll("option[data-dynamic-folder]").forEach(option => {
+      option.remove();
+    });
+
     folderCount.textContent = folders.length;
+
     folders.forEach((folderData) => {
       const option = document.createElement("option");
 
+      option.dataset.dynamicFolder = "true";
       option.value = folderData.name;
 
       option.textContent = folderData.name;
@@ -578,22 +591,132 @@ async function loadFolders() {
       noteFolder.appendChild(option);
       const folder = document.createElement("button");
 
-      folder.className = "nav-item folder-btn";
+      folder.className = "nav-item folder-btn dynamic-folder";
 
       folder.innerHTML = `
-                <span>📁</span>
-                ${escapeHTML(folderData.name)}
-            `;
+    <span class="folder-name">
+        <span>📁</span>
+        <span>${escapeHTML(folderData.name)}</span>
+    </span>
 
-      folder.addEventListener("click", () => {
+    ${folderData.name.toLowerCase() !== "general"
+          ? `<span
+                class="delete-folder-btn"
+                title="Delete folder"
+                aria-label="Delete folder"
+            >🗑️</span>`
+          : ""
+        }
+`;
+
+      folder.addEventListener("click", (event) => {
+
+        // Delete button was clicked
+        if (event.target.closest(".delete-folder-btn")) {
+          return;
+        }
+
         currentNoteView = `folder:${folderData.name}`;
 
         setActiveNav(folder);
 
-        document.getElementById("notesHeading").textContent = folderData.name;
+        document.getElementById("notesHeading").textContent =
+          folderData.name;
 
         applyNoteFilters();
       });
+
+
+      // ==============================
+      // Delete folder
+      // ==============================
+
+      const deleteFolderBtn =
+        folder.querySelector(".delete-folder-btn");
+
+      if (deleteFolderBtn) {
+
+        deleteFolderBtn.addEventListener("click", async (event) => {
+
+          event.stopPropagation();
+
+          const confirmed = await showFolderDeleteConfirm(folderData.name);
+
+          if (!confirmed) {
+            return;
+          }
+
+          try {
+
+            const response = await fetch(
+              `/api/folders/${folderData.id}`,
+              {
+                method: "DELETE",
+                headers: {
+                  "Authorization":
+                    `Bearer ${localStorage.getItem("token")}`
+                }
+              }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+
+              showToast(
+                result.message || "Failed to delete folder.",
+                "error"
+              );
+
+              return;
+            }
+
+            showToast(
+              "Folder deleted successfully.",
+              "success"
+            );
+
+            // If the deleted folder was currently selected,
+            // return to All Notes
+            if (
+              currentNoteView ===
+              `folder:${folderData.name}`
+            ) {
+
+              currentNoteView = "all";
+
+              const allNotesNav =
+                document.querySelector(
+                  '.nav-item[data-view="all"]'
+                );
+
+              if (allNotesNav) {
+                setActiveNav(allNotesNav);
+              }
+
+              document.getElementById(
+                "notesHeading"
+              ).textContent = "Recent Notes";
+            }
+
+            // Reload folders and notes
+            await loadFolders();
+            await loadNotes();
+
+          } catch (error) {
+
+            console.error(
+              "Delete folder error:",
+              error
+            );
+
+            showToast(
+              "Failed to delete folder.",
+              "error"
+            );
+          }
+        });
+      }
       newFolderBtn.parentElement.insertBefore(folder, newFolderBtn);
     });
   } catch (error) {
@@ -612,6 +735,32 @@ function isFavorite(note) {
     Array.isArray(note.favoriteBy) &&
     note.favoriteBy.includes(currentUser.email)
   );
+}
+
+function formatNoteTime(note) {
+
+  const dateValue =
+    note.updatedAt &&
+      note.updatedAt !== "Just now"
+      ? note.updatedAt
+      : note.createdAt;
+
+  if (!dateValue) {
+    return "Just now";
+  }
+
+  const date = new Date(dateValue);
+
+  if (isNaN(date.getTime())) {
+    return "Just now";
+  }
+
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
 }
 
 function renderNotes(notesToRender) {
@@ -676,28 +825,65 @@ function renderNotes(notesToRender) {
         return;
       }
 
-      // Don't open the card when clicking an action button
+      // ---------------------------------------
+      // VIEW BUTTON
+      // Close expanded card first, then open note
+      // ---------------------------------------
+      const viewButton = event.target.closest(
+        '.note-actions button[onclick^="openNote"]'
+      );
+
+      if (viewButton) {
+
+        // Close expanded card
+        card.classList.remove("mobile-expanded");
+
+        // Remove mobile overlay immediately
+        const overlay = document.querySelector(".mobile-note-overlay");
+
+        if (overlay) {
+          overlay.remove();
+        }
+
+        // Let the existing onclick="openNote(...)"
+        // open the note viewer normally.
+        return;
+      }
+
+      // ---------------------------------------
+      // OTHER BUTTONS
+      // Don't expand/collapse the card
+      // ---------------------------------------
       if (event.target.closest(".note-actions")) {
         return;
       }
 
-      // If already expanded, don't toggle from inside the card
+      // ---------------------------------------
+      // ALREADY EXPANDED
+      // ---------------------------------------
       if (card.classList.contains("mobile-expanded")) {
         return;
       }
 
+      // ---------------------------------------
+      // CREATE OVERLAY
+      // ---------------------------------------
       const overlay = document.createElement("div");
 
       overlay.className = "mobile-note-overlay";
 
       document.body.appendChild(overlay);
 
+      // Expand card
       card.classList.add("mobile-expanded");
 
       requestAnimationFrame(() => {
         overlay.classList.add("show");
       });
 
+      // ---------------------------------------
+      // CLOSE EXPANDED CARD
+      // ---------------------------------------
       const closeExpandedCard = () => {
 
         card.classList.remove("mobile-expanded");
@@ -728,7 +914,9 @@ function renderNotes(notesToRender) {
             <h3>
                 ${escapeHTML(note.title)}
             </h3>
-
+      <div class="mobile-like-count">
+    ❤️ <span>${Array.isArray(note.likedBy) ? note.likedBy.length : 0}</span>
+</div>
             <p>
                 ${escapeHTML(note.content.substring(0, 100))}
                 ${note.content.length > 100 ? "..." : ""}
@@ -737,8 +925,8 @@ function renderNotes(notesToRender) {
             <div class="note-footer">
 
                 <span class="note-time">
-                    Updated ${note.updatedAt}
-                </span>
+                    Updated at ${formatNoteTime(note)}
+              </span>
 
                 <div class="note-actions">
 
@@ -1157,10 +1345,110 @@ async function deleteNote(id) {
   }
 }
 // ==============================
+// Folder Delete Confirmation
+// ==============================
+
+function showFolderDeleteConfirm(folderName) {
+  return new Promise((resolve) => {
+
+    const overlay = document.createElement("div");
+    overlay.className = "delete-confirm-overlay";
+
+    overlay.innerHTML = `
+            <div class="delete-confirm-modal">
+
+                <div class="delete-confirm-icon">
+                    🗑️
+                </div>
+
+                <h3>Delete Folder?</h3>
+
+                <p>
+                    Are you sure you want to delete
+                    <strong>"${escapeHTML(folderName)}"</strong>?
+                    <br><br>
+                    Notes inside this folder will be moved to
+                    <strong>General</strong>.
+                </p>
+
+                <div class="delete-confirm-actions">
+
+                    <button
+                        class="delete-cancel-btn"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        class="delete-confirm-btn"
+                        type="button"
+                    >
+                        Delete Folder
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+    document.body.appendChild(overlay);
+
+    const cancelButton =
+      overlay.querySelector(".delete-cancel-btn");
+
+    const confirmButton =
+      overlay.querySelector(".delete-confirm-btn");
+
+    function close(result) {
+
+      overlay.classList.add("closing");
+
+      setTimeout(() => {
+        overlay.remove();
+        resolve(result);
+      }, 180);
+    }
+
+    cancelButton.addEventListener("click", () => {
+      close(false);
+    });
+
+    confirmButton.addEventListener("click", () => {
+      close(true);
+    });
+
+    overlay.addEventListener("click", (event) => {
+
+      if (event.target === overlay) {
+        close(false);
+      }
+
+    });
+  });
+}
+
+// ==============================
 // Favorite
 // ==============================
 
 async function toggleFavorite(id) {
+
+  // Close mobile expanded card and remove blur
+  if (window.innerWidth <= 700) {
+
+    const overlay = document.querySelector(".mobile-note-overlay");
+
+    if (overlay) {
+      overlay.remove();
+    }
+
+    document.querySelectorAll(".note-card.mobile-expanded")
+      .forEach(card => {
+        card.classList.remove("mobile-expanded");
+      });
+  }
+
   try {
     const currentUser = JSON.parse(localStorage.getItem("user"));
 
@@ -1657,6 +1945,16 @@ menuToggle.addEventListener("click", (event) => {
 // Close when clicking outside sidebar
 
 document.addEventListener("click", (event) => {
+
+  // Ignore clicks on the View button
+  const viewButton = event.target.closest(
+    '.note-actions button[onclick^="openNote"]'
+  );
+
+  if (viewButton) {
+    return;
+  }
+
   if (
     sidebar.classList.contains("open") &&
     !sidebar.contains(event.target) &&
@@ -1764,35 +2062,123 @@ folderForm.addEventListener("submit", async (event) => {
 
     // Create folder button
 
-    const folder = document.createElement("button");
+    //     const folder = document.createElement("button");
 
-    folder.className = "nav-item folder-btn";
+    //     folder.className = "nav-item folder-btn";
 
-    folder.innerHTML = `
-        <span>📁</span>
-        ${escapeHTML(trimmedName)}
-    `;
+    //     folder.innerHTML = `
+    //     <span class="folder-name">
+    //         <span>📁</span>
+    //         ${escapeHTML(folderData.name)}
+    //     </span>
 
-    // Folder click
+    //     ${folderData.name.toLowerCase() !== "general"
+    //         ? `<span
+    //         class="delete-folder-btn"
+    //         title="Delete folder"
+    //         style="
+    //             display: flex !important;
+    //             position: absolute !important;
+    //             right: 10px !important;
+    //             top: 50% !important;
+    //             transform: translateY(-50%) !important;
+    //             width: 28px !important;
+    //             height: 28px !important;
+    //             align-items: center !important;
+    //             justify-content: center !important;
+    //             cursor: pointer !important;
+    //             z-index: 999 !important;
+    //             font-size: 16px !important;
+    //         "
+    //     >🗑️</span>`
+    //         : ""
+    //       }
+    // `;
 
-    folder.addEventListener("click", () => {
-      currentNoteView = `folder:${trimmedName}`;
+    //     folder.addEventListener("click", (event) => {
 
-      setActiveNav(folder);
+    //       // Don't open folder when delete button is clicked
+    //       if (event.target.closest(".delete-folder-btn")) {
+    //         return;
+    //       }
 
-      document.getElementById("notesHeading").textContent = trimmedName;
+    //       currentNoteView = `folder:${folderData.name}`;
 
-      applyNoteFilters();
-    });
+    //       setActiveNav(folder);
 
-    // Add folder BEFORE + New Folder
+    //       document.getElementById("notesHeading").textContent =
+    //         folderData.name;
 
-    newFolderBtn.parentElement.insertBefore(folder, newFolderBtn);
+    //       applyNoteFilters();
+    //     });
 
-    // Update folder count immediately
-    const currentFolderCount = Number(folderCount.textContent) || 0;
-    folderCount.textContent = currentFolderCount + 1;
+    //     const deleteButton = folder.querySelector(".delete-folder-btn");
 
+    //     if (deleteButton) {
+
+    //       deleteButton.addEventListener("click", async (event) => {
+
+    //         event.stopPropagation();
+
+    //         const confirmed = confirm(
+    //           `Delete "${folderData.name}"?\n\nNotes inside this folder will be moved to General.`
+    //         );
+
+    //         if (!confirmed) {
+    //           return;
+    //         }
+
+    //         try {
+
+    //           const response = await fetch(
+    //             `/api/folders/${folderData.id}`,
+    //             {
+    //               method: "DELETE",
+    //               headers: {
+    //                 "Authorization":
+    //                   `Bearer ${localStorage.getItem("token")}`
+    //               }
+    //             }
+    //           );
+
+    //           const result = await response.json();
+
+    //           if (!response.ok) {
+    //             showToast(
+    //               result.message || "Failed to delete folder.",
+    //               "error"
+    //             );
+    //             return;
+    //           }
+
+    //           showToast(
+    //             "Folder deleted successfully.",
+    //             "success"
+    //           );
+
+    //           // Reload folders
+    //           loadFolders();
+
+    //         } catch (error) {
+
+    //           console.error("Delete folder error:", error);
+
+    //           showToast(
+    //             "Failed to delete folder.",
+    //             "error"
+    //           );
+    //         }
+    //       });
+    //     }
+    //     // Add folder BEFORE + New Folder
+
+    //     newFolderBtn.parentElement.insertBefore(folder, newFolderBtn);
+
+    //     // Update folder count immediately
+    //     const currentFolderCount = Number(folderCount.textContent) || 0;
+    //     folderCount.textContent = currentFolderCount + 1;
+    // Refresh folders from MongoDB
+    await loadFolders();
     closeFolderModal();
 
     showToast(`"${trimmedName}" folder created.`, "success");
