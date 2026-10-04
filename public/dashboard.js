@@ -69,9 +69,21 @@ if (searchIcon) {
     if (window.innerWidth <= 700) {
       event.stopPropagation();
 
-      searchBox.classList.toggle("mobile-search-open");
+      const isOpen =
+        searchBox.classList.contains("mobile-search-open");
 
-      if (searchBox.classList.contains("mobile-search-open")) {
+      if (isOpen) {
+        // Close search and hide mobile keyboard
+        searchInput.blur();
+        searchBox.classList.remove("mobile-search-open");
+      } else {
+        // Open search
+        searchBox.classList.add("mobile-search-open");
+
+        // Focus input so user can immediately type
+        setTimeout(() => {
+          searchInput.focus();
+        }, 50);
       }
     }
   });
