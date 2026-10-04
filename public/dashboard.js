@@ -2,7 +2,7 @@ const token = localStorage.getItem("token");
 const currentUser = JSON.parse(localStorage.getItem("user"));
 
 if (!currentUser) {
-    window.location.href = "index.html";
+  window.location.href = "index.html";
 }
 
 const userName = currentUser.name || "User";
@@ -14,19 +14,19 @@ const userAvatar = document.getElementById("userAvatar");
 const topAvatar = document.getElementById("topAvatar");
 
 if (welcomeUserName) {
-    welcomeUserName.textContent = userName;
+  welcomeUserName.textContent = userName;
 }
 
 if (sidebarUserName) {
-    sidebarUserName.textContent = userName;
+  sidebarUserName.textContent = userName;
 }
 
 if (userAvatar) {
-    userAvatar.textContent = firstLetter;
+  userAvatar.textContent = firstLetter;
 }
 
 if (topAvatar) {
-    topAvatar.textContent = firstLetter;
+  topAvatar.textContent = firstLetter;
 }
 if (!token) {
   window.location.href = "/";
@@ -193,12 +193,12 @@ const notificationCount = document.getElementById("notificationCount");
 const clearNotificationsBtn = document.getElementById("clearNotificationsBtn");
 
 const currentUserForNotifications = JSON.parse(
-    localStorage.getItem("user")
+  localStorage.getItem("user")
 );
 
 const NOTIFICATION_KEY = currentUserForNotifications?.email
-    ? `collabnotes_notifications_${currentUserForNotifications.email}`
-    : "collabnotes_notifications";
+  ? `collabnotes_notifications_${currentUserForNotifications.email}`
+  : "collabnotes_notifications";
 // Get notifications
 function getNotifications() {
   try {
@@ -669,6 +669,48 @@ function renderNotes(notesToRender) {
 
     card.className = "note-card";
     card.style.animationDelay = `${index * 0.06}s`;
+    card.addEventListener("click", (event) => {
+
+      // Only activate this behavior on mobile
+      if (window.innerWidth > 700) {
+        return;
+      }
+
+      // Don't open the card when clicking an action button
+      if (event.target.closest(".note-actions")) {
+        return;
+      }
+
+      // If already expanded, don't toggle from inside the card
+      if (card.classList.contains("mobile-expanded")) {
+        return;
+      }
+
+      const overlay = document.createElement("div");
+
+      overlay.className = "mobile-note-overlay";
+
+      document.body.appendChild(overlay);
+
+      card.classList.add("mobile-expanded");
+
+      requestAnimationFrame(() => {
+        overlay.classList.add("show");
+      });
+
+      const closeExpandedCard = () => {
+
+        card.classList.remove("mobile-expanded");
+
+        overlay.classList.remove("show");
+
+        setTimeout(() => {
+          overlay.remove();
+        }, 200);
+      };
+
+      overlay.addEventListener("click", closeExpandedCard);
+    });
     card.innerHTML = `
 
             <div class="note-card-meta">
@@ -1163,38 +1205,38 @@ async function toggleFavorite(id) {
 // ==============================
 
 async function toggleLike(id) {
-    try {
-        const currentUser = JSON.parse(localStorage.getItem("user"));
+  try {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
 
-        if (!currentUser) {
-            showToast("Please login first.", "error");
-            return;
-        }
-
-        const response = await fetch(`/api/notes/${id}/like`, {
-            method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Could not update like.");
-        }
-
-        await loadNotes();
-
-        showToast(
-            data.liked ? "Note liked ❤️" : "Like removed.",
-            "success"
-        );
-
-    } catch (error) {
-        console.error("Like error:", error);
-        showToast(error.message, "error");
+    if (!currentUser) {
+      showToast("Please login first.", "error");
+      return;
     }
+
+    const response = await fetch(`/api/notes/${id}/like`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Could not update like.");
+    }
+
+    await loadNotes();
+
+    showToast(
+      data.liked ? "Note liked ❤️" : "Like removed.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error("Like error:", error);
+    showToast(error.message, "error");
+  }
 }
 
 function renderTrashNotes(trashNotes) {

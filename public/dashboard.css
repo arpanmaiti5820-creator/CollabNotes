@@ -187,6 +187,7 @@ button {
   background: transparent;
   font-size: 17px;
 }
+
 .icon-btn {
   transition: 0.25s ease;
 }
@@ -201,6 +202,7 @@ button {
 .icon-btn:active {
   transform: scale(0.95);
 }
+
 .mobile-logo {
   display: none;
 }
@@ -273,7 +275,7 @@ button {
   align-items: center;
 }
 
-.stat-card > span {
+.stat-card>span {
   font-size: 22px;
 }
 
@@ -437,32 +439,32 @@ button {
 ============================== */
 
 .like-btn {
-    min-width: 32px;
-    padding: 0 6px;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
+  min-width: 32px;
+  padding: 0 6px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
 }
 
 .like-btn .like-count {
-    font-size: 11px;
-    color: #8b94a5;
+  font-size: 11px;
+  color: #8b94a5;
 }
 
 .like-btn.liked {
-    color: #ff5c7a !important;
-    background: rgba(255, 92, 122, 0.10) !important;
-    border-color: rgba(255, 92, 122, 0.35) !important;
+  color: #ff5c7a !important;
+  background: rgba(255, 92, 122, 0.10) !important;
+  border-color: rgba(255, 92, 122, 0.35) !important;
 }
 
 .like-btn.liked .like-count {
-    color: #ff5c7a;
+  color: #ff5c7a;
 }
 
 .like-btn:hover {
-    color: #ff5c7a !important;
-    background: rgba(255, 92, 122, 0.10) !important;
+  color: #ff5c7a !important;
+  background: rgba(255, 92, 122, 0.10) !important;
 }
 
 /* =====================
@@ -626,6 +628,7 @@ button {
 
   border-top: 1px solid #252d3a;
 }
+
 .cancel-btn,
 .save-btn {
   border: none;
@@ -668,6 +671,7 @@ button {
 .mobile-header {
   display: none;
 }
+
 .sidebar {
   display: flex;
   position: fixed;
@@ -696,6 +700,7 @@ button {
 .menu-toggle {
   display: block;
 }
+
 .menu-toggle {
   border: none;
   background: transparent;
@@ -757,6 +762,7 @@ button {
     display: block;
     width: 100%;
   }
+
   .content {
     padding: 24px 14px;
   }
@@ -795,7 +801,7 @@ button {
     gap: 10px;
   }
 
-  .stat-card > span {
+  .stat-card>span {
     font-size: 18px;
   }
 
@@ -816,7 +822,7 @@ button {
   margin-top: 15px;
 }
 
-.visibility-section > label {
+.visibility-section>label {
   display: block;
   margin-bottom: 8px;
   font-size: 13px;
@@ -873,7 +879,7 @@ button {
   margin-top: 18px;
 }
 
-.attachment-section > label {
+.attachment-section>label {
   display: block;
   margin-bottom: 8px;
   font-size: 13px;
@@ -1296,6 +1302,7 @@ button {
     max-width: none;
   }
 }
+
 /* ==============================
    Loading State
 ================================ */
@@ -1333,6 +1340,7 @@ button {
     transform: rotate(360deg);
   }
 }
+
 /* =========================================
    NEW FOLDER MODAL
 ========================================= */
@@ -1558,6 +1566,7 @@ button {
     width: 100%;
   }
 }
+
 /* =========================================
    NOTIFICATION PANEL
 ========================================= */
@@ -1617,7 +1626,7 @@ button {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.notification-header > div {
+.notification-header>div {
   display: flex;
 
   flex-direction: column;
@@ -1848,6 +1857,7 @@ button {
     max-width: none;
   }
 }
+
 /* ==============================
    Empty Notes State
 ============================== */
@@ -1879,6 +1889,7 @@ button {
   opacity: 0.7;
   line-height: 1.6;
 }
+
 /* ==============================
    Clear Search Button
 ============================== */
@@ -1901,6 +1912,7 @@ button {
 .clear-search-btn.hidden {
   display: none;
 }
+
 /* ==============================
    Small Phone Screens
 ============================== */
@@ -1923,12 +1935,31 @@ button {
   }
 
   .stats {
-    grid-template-columns: 1fr;
-    gap: 9px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 20px 0 30px;
   }
 
   .stat-card {
-    padding: 13px;
+    padding: 10px 6px;
+    gap: 4px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .stat-card>span {
+    font-size: 18px;
+  }
+
+  .stat-card strong {
+    font-size: 16px;
+  }
+
+  .stat-card small {
+    font-size: 9px;
+    white-space: nowrap;
   }
 
   .note-card {
@@ -1963,6 +1994,7 @@ button {
     font-size: 18px;
   }
 }
+
 /* ==============================
    Mobile Modal Improvements
 ============================== */
@@ -2030,6 +2062,7 @@ button {
     height: 500px;
   }
 }
+
 @media (max-width: 700px) {
   .mobile-menu-open .sidebar {
     display: flex;
@@ -2041,6 +2074,7 @@ button {
     z-index: 2000;
   }
 }
+
 /* ==============================
    Notes Error State
 ================================ */
@@ -2097,6 +2131,7 @@ button {
   transform: translateY(-2px);
   opacity: 0.9;
 }
+
 /* ==============================
    Empty Notes State
 ================================= */
@@ -2160,6 +2195,7 @@ button {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(109, 93, 252, 0.25);
 }
+
 /* ==============================
    Character Counter
 ================================= */
@@ -2171,12 +2207,14 @@ button {
   color: #737b8c;
   font-size: 12px;
 }
+
 .title-counter {
   margin-top: 6px;
   text-align: right;
   color: #737b8c;
   font-size: 12px;
 }
+
 .note-form button[type="submit"]:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -2188,6 +2226,7 @@ button {
   transform: none;
   box-shadow: none;
 }
+
 .sidebar-nav a.active {
   background: rgba(109, 93, 252, 0.15);
   color: #ffffff;
@@ -2211,6 +2250,7 @@ button {
   color: #ffd166;
   text-shadow: 0 0 8px rgba(255, 209, 102, 0.35);
 }
+
 .note-card-meta {
   display: flex;
   align-items: center;
@@ -2236,6 +2276,7 @@ button {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
 }
+
 .note-card {
   transition:
     transform 0.25s ease,
@@ -2248,6 +2289,7 @@ button {
   border-color: rgba(109, 93, 252, 0.45);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
+
 .note-actions button {
   transition:
     transform 0.2s ease,
@@ -2263,6 +2305,7 @@ button {
 .note-actions button:active {
   transform: scale(0.92);
 }
+
 .note-card {
   animation: noteCardIn 0.35s ease both;
 }
@@ -2278,19 +2321,21 @@ button {
     transform: translateY(0);
   }
 }
+
 .note-card h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.note-card > p {
+.note-card>p {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
   line-height: 1.6;
 }
+
 @media (max-width: 600px) {
   .note-card {
     padding: 16px;
@@ -2300,7 +2345,7 @@ button {
     font-size: 16px;
   }
 
-  .note-card > p {
+  .note-card>p {
     font-size: 13px;
   }
 
@@ -2317,6 +2362,7 @@ button {
     height: 32px;
   }
 }
+
 @media (max-width: 600px) {
   .modal {
     padding: 12px;
@@ -2344,6 +2390,7 @@ button {
     min-height: 140px;
   }
 }
+
 .modal {
   opacity: 1;
   transition: opacity 0.2s ease;
@@ -2369,15 +2416,18 @@ button {
     transform: translateY(0) scale(1);
   }
 }
+
 .modal {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
+
 .search-box:focus-within {
   border-color: #6d5dfc;
   box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.12);
   transition: 0.2s ease;
 }
+
 /* ==============================
    Unsaved Changes Confirmation
 ============================== */
@@ -2532,6 +2582,7 @@ button {
     width: 100%;
   }
 }
+
 /* ==============================
    Mobile Notification Panel
 ============================== */
@@ -2549,6 +2600,7 @@ button {
     overflow-y: auto;
   }
 }
+
 /* ==============================
    Mobile Notification Panel
 ============================== */
@@ -2569,227 +2621,226 @@ button {
     z-index: 99999;
   }
 }
+
 /* =========================================
    DELETE CONFIRMATION MODAL
 ========================================= */
 
 .delete-confirm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.72);
-    backdrop-filter: blur(8px);
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    z-index: 9999;
+  z-index: 9999;
 
-    padding: 20px;
+  padding: 20px;
 
-    animation: deleteOverlayIn 0.2s ease;
+  animation: deleteOverlayIn 0.2s ease;
 }
 
 .delete-confirm-modal {
-    width: min(420px, 100%);
+  width: min(420px, 100%);
 
-    background: #111827;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
 
-    padding: 30px;
+  padding: 30px;
 
-    text-align: center;
+  text-align: center;
 
-    box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.5),
-        0 0 35px rgba(124, 92, 255, 0.12);
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.5),
+    0 0 35px rgba(124, 92, 255, 0.12);
 
-    animation: deleteModalIn 0.25s ease;
+  animation: deleteModalIn 0.25s ease;
 }
 
 .delete-confirm-icon {
-    width: 58px;
-    height: 58px;
+  width: 58px;
+  height: 58px;
 
-    margin: 0 auto 18px;
+  margin: 0 auto 18px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    border-radius: 16px;
+  border-radius: 16px;
 
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 
-    font-size: 27px;
+  font-size: 27px;
 }
 
 .delete-confirm-modal h3 {
-    margin: 0 0 10px;
+  margin: 0 0 10px;
 
-    color: #ffffff;
+  color: #ffffff;
 
-    font-size: 21px;
-    font-weight: 700;
+  font-size: 21px;
+  font-weight: 700;
 }
 
 .delete-confirm-modal p {
-    margin: 0 auto 26px;
+  margin: 0 auto 26px;
 
-    max-width: 320px;
+  max-width: 320px;
 
-    color: #9ca3af;
+  color: #9ca3af;
 
-    font-size: 14px;
-    line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .delete-confirm-actions {
-    display: flex;
-    gap: 12px;
+  display: flex;
+  gap: 12px;
 }
 
 .delete-confirm-actions button {
-    flex: 1;
+  flex: 1;
 
-    min-height: 44px;
+  min-height: 44px;
 
-    border-radius: 11px;
+  border-radius: 11px;
 
-    font-size: 14px;
-    font-weight: 600;
+  font-size: 14px;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .delete-cancel-btn {
-    background: #1f2937;
-    color: #d1d5db;
+  background: #1f2937;
+  color: #d1d5db;
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .delete-cancel-btn:hover {
-    background: #293548;
-    transform: translateY(-1px);
+  background: #293548;
+  transform: translateY(-1px);
 }
 
 .delete-confirm-btn {
-    background: linear-gradient(
-        135deg,
-        #ef4444,
-        #dc2626
-    );
+  background: linear-gradient(135deg,
+      #ef4444,
+      #dc2626);
 
-    color: #ffffff;
+  color: #ffffff;
 
-    border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.4);
 
-    box-shadow:
-        0 8px 20px rgba(239, 68, 68, 0.18);
+  box-shadow:
+    0 8px 20px rgba(239, 68, 68, 0.18);
 }
 
 .delete-confirm-btn:hover {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 
-    box-shadow:
-        0 10px 25px rgba(239, 68, 68, 0.28);
+  box-shadow:
+    0 10px 25px rgba(239, 68, 68, 0.28);
 }
 
 .delete-confirm-overlay.closing {
-    animation: deleteOverlayOut 0.18s ease forwards;
+  animation: deleteOverlayOut 0.18s ease forwards;
 }
 
-.delete-confirm-overlay.closing
-.delete-confirm-modal {
-    animation: deleteModalOut 0.18s ease forwards;
+.delete-confirm-overlay.closing .delete-confirm-modal {
+  animation: deleteModalOut 0.18s ease forwards;
 }
 
 @keyframes deleteOverlayIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes deleteModalIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.96);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes deleteOverlayOut {
-    from {
-        opacity: 1;
-    }
+  from {
+    opacity: 1;
+  }
 
-    to {
-        opacity: 0;
-    }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes deleteModalOut {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 
-    to {
-        opacity: 0;
-        transform: translateY(8px) scale(0.97);
-    }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
 
-    .delete-confirm-modal {
-        padding: 24px 20px;
-        border-radius: 17px;
-    }
+  .delete-confirm-modal {
+    padding: 24px 20px;
+    border-radius: 17px;
+  }
 
-    .delete-confirm-actions {
-        flex-direction: column-reverse;
-    }
+  .delete-confirm-actions {
+    flex-direction: column-reverse;
+  }
 
-    .delete-confirm-actions button {
-        width: 100%;
-    }
+  .delete-confirm-actions button {
+    width: 100%;
+  }
 }
+
 /* =========================================
    PERMANENT DELETE MODAL
 ========================================= */
 
 .permanent-delete-icon {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
 }
 
 .permanent-delete-modal p strong {
-    display: block;
-    margin-top: 6px;
-    color: #fca5a5;
-    font-weight: 600;
+  display: block;
+  margin-top: 6px;
+  color: #fca5a5;
+  font-weight: 600;
 }
 
 .permanent-delete-btn {
-    min-width: 150px;
+  min-width: 150px;
 }
 
 /* ==============================
@@ -2813,6 +2864,7 @@ button {
     text-size-adjust: 100%;
   }
 }
+
 /* ==============================
    FINAL MOBILE HEADER FIX
 ============================== */
@@ -2863,6 +2915,7 @@ button {
     flex-shrink: 0;
   }
 }
+
 /* ==============================
    MOBILE HORIZONTAL SCROLL FIX
 ============================== */
@@ -2890,6 +2943,7 @@ body {
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .sidebar-logout-btn {
   width: 100%;
   margin-top: 15px;
@@ -2913,6 +2967,7 @@ body {
     display: none;
   }
 }
+
 .sidebar-logout-btn {
   width: 100%;
   margin-top: 14px;
@@ -2937,6 +2992,7 @@ body {
     display: none;
   }
 }
+
 /* ==============================
    MOBILE SIDEBAR SCROLL FIX
 ============================== */
@@ -2963,6 +3019,7 @@ body {
     padding-bottom: 20px;
   }
 }
+
 /* Compact Note Cards */
 
 .note-card {
@@ -2975,7 +3032,7 @@ body {
   margin-bottom: 10px;
 }
 
-.note-card > p {
+.note-card>p {
   font-size: 13px;
   line-height: 1.5;
 }
@@ -2991,6 +3048,7 @@ body {
     font-size: 16px;
   }
 }
+
 /* ==============================
    COMPACT NOTE CARDS
 ============================== */
@@ -3013,7 +3071,7 @@ body {
   margin-bottom: 8px;
 }
 
-.note-card > p {
+.note-card>p {
   font-size: 13px;
   line-height: 1.4;
 }
@@ -3036,7 +3094,7 @@ body {
     font-size: 16px;
   }
 
-  .note-card > p {
+  .note-card>p {
     font-size: 12px;
   }
 }
@@ -3076,9 +3134,208 @@ body {
     transform: translateX(-100%);
   }
 
-  .sidebar:not(.open) + .main {
+  .sidebar:not(.open)+.main {
     margin-left: 0;
     width: 100%;
   }
 
+}
+
+/* =========================================
+   MOBILE COMPACT NOTE CARDS
+========================================= */
+
+@media (max-width: 700px) {
+
+  .note-card {
+    width: 100%;
+    height: 72px;
+    min-height: 72px;
+    padding: 14px 16px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+  }
+
+  /* Hide unnecessary information in compact mode */
+  .note-card .note-folder {
+    display: none;
+  }
+
+  .note-card>p,
+  .note-card .note-footer {
+    display: none;
+  }
+
+  /* Keep title and Public/Private badge */
+  .note-card-meta {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+
+    display: flex;
+    align-items: center;
+  }
+
+  .note-card h3 {
+    margin: 0;
+    padding-right: 100px;
+
+    font-size: 16px;
+    line-height: 1.3;
+
+    max-width: 100%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  /* =====================================
+       EXPANDED MOBILE NOTE
+    ===================================== */
+
+  .mobile-note-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+
+    z-index: 4000;
+
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .mobile-note-overlay.show {
+    opacity: 1;
+  }
+
+
+  .note-card.mobile-expanded {
+    position: fixed !important;
+    z-index: 4001;
+
+    width: calc(100vw - 32px);
+    max-width: 440px;
+
+    height: auto;
+    min-height: 300px;
+    max-height: calc(100vh - 32px);
+
+    left: 50%;
+    top: 50%;
+
+    /* IMPORTANT: keep it centered */
+    transform: translate3d(-50%, -50%, 0) !important;
+
+    padding: 20px;
+    padding-bottom: 80px;
+    box-sizing: border-box;
+
+    display: block;
+    overflow-y: auto;
+
+    cursor: default;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+
+  /* Show everything again when expanded */
+
+  .note-card.mobile-expanded .note-folder {
+    display: block;
+  }
+
+  .note-card.mobile-expanded .note-card-meta {
+    position: static;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 12px;
+  }
+
+  .note-card.mobile-expanded h3 {
+    padding-right: 0;
+
+    margin-top: 14px;
+
+    font-size: 20px;
+
+    white-space: normal;
+  }
+
+  .note-card.mobile-expanded>p {
+    display: -webkit-box;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    margin-top: 10px;
+
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+  }
+
+  .note-card.mobile-expanded .note-footer {
+    display: flex;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+
+    width: auto;
+    margin: 0;
+
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .note-card.mobile-expanded .note-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .note-card.mobile-expanded .note-actions button {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 9px;
+
+    display: grid;
+    place-items: center;
+
+    background: #151b26;
+    border: 1px solid #293243;
+
+    color: #8c96a8;
+    font-size: 14px;
+
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .note-card.mobile-expanded .note-actions button:hover {
+    background: #20293a;
+    border-color: #6d5dfc;
+    color: white;
+    transform: translateY(-2px);
+  }
 }
