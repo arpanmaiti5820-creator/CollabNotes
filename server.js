@@ -145,7 +145,7 @@ const upload = multer({
     storage: storage,
 
     limits: {
-        fileSize: 10 * 1024 * 1024
+        fileSize: 40 * 1024 * 1024
     },
 
     fileFilter: (req, file, cb) => {
@@ -637,11 +637,6 @@ app.get("/api/notes/:id", authenticateToken, async (req, res) => {
     }
 });
 
-
-
-// ==============================
-// Create note
-// ==============================
 // ==============================
 // Create Note
 // ==============================

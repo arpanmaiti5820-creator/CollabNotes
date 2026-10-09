@@ -1287,14 +1287,15 @@ function showDeleteConfirm() {
     const confirmButton =
       overlay.querySelector(".delete-confirm-btn");
 
+    let isClosing = false;
+
     function close(result) {
+      if (isClosing) return;
 
-      overlay.classList.add("closing");
+      isClosing = true;
 
-      setTimeout(() => {
-        overlay.remove();
-        resolve(result);
-      }, 180);
+      overlay.remove();
+      resolve(result);
     }
 
     cancelButton.addEventListener("click", () => {
@@ -1540,77 +1541,65 @@ async function toggleLike(id) {
 }
 
 function renderTrashNotes(trashNotes) {
-  notesGrid.innerHTML = "";
+    notesGrid.innerHTML = "";
 
-  if (trashNotes.length === 0) {
-    notesGrid.innerHTML = `
-        <div class="empty-notes">
-
-            <div class="empty-icon">
-                🗑️
+    if (!trashNotes.length) {
+        notesGrid.innerHTML = `
+            <div class="empty-notes">
+                <div class="empty-icon">🗑️</div>
+                <h3>Trash is empty</h3>
+                <p>Deleted notes will appear here.</p>
             </div>
+        `;
+        return;
+    }
 
-            <h3>
-                Trash is empty
-            </h3>
+    trashNotes.forEach((note) => {
+        const card = document.createElement("article");
+        card.className = "note-card trash-note-card";
 
-            <p>
-                Deleted notes will appear here.
-            </p>
-
-        </div>
-    `;
-
-    return;
-  }
-
-  trashNotes.forEach((note) => {
-    const card = document.createElement("div");
-
-    card.className = "note-card";
-
-    card.innerHTML = `
-            <div class="note-folder">
-                ${escapeHTML(note.folder)}
-            </div>
-
-            <h3>
-                ${escapeHTML(note.title)}
-            </h3>
-
-            <p>
-                ${escapeHTML((note.content || "").substring(0, 100))}
-            </p>
-
-            <div class="note-footer">
-
-                <span class="note-time">
-                    Deleted
+        card.innerHTML = `
+            <div class="trash-note-heading">
+                <span class="trash-note-folder">
+                    📁 ${escapeHTML(note.folder || "General")}
                 </span>
 
-                <div class="note-actions">
+                <h3 class="trash-note-title">
+                    ${escapeHTML(note.title || "Untitled note")}
+                </h3>
+            </div>
 
+            <p class="trash-note-content">
+                ${escapeHTML((note.content || "").substring(0, 120))}
+            </p>
+
+            <div class="trash-note-footer">
+                <span class="trash-note-deleted">Deleted</span>
+
+                <div class="trash-note-actions">
                     <button
-                        onclick="restoreNote(${note.id})"
-                        title="Restore"
+                        type="button"
+                        class="trash-restore-btn"
+                        onclick="restoreNote(${Number(note.id)})"
+                        aria-label="Restore note"
                     >
-                        ♻️
+                        ♻️ <span>Restore</span>
                     </button>
 
                     <button
-                        onclick="permanentlyDeleteNote(${note.id})"
-                        title="Delete Permanently"
+                        type="button"
+                        class="trash-permanent-btn"
+                        onclick="permanentlyDeleteNote(${Number(note.id)})"
+                        aria-label="Delete note permanently"
                     >
-                        ❌
+                        🗑️ <span>Delete</span>
                     </button>
-
                 </div>
-
             </div>
         `;
 
-    notesGrid.appendChild(card);
-  });
+        notesGrid.appendChild(card);
+    });
 }
 
 async function restoreNote(id) {
