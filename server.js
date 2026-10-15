@@ -121,27 +121,38 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
 
-const storage = multer.diskStorage({
 
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
+const { v2: cloudinary } = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-    filename: (req, file, cb) => {
-
-        const uniqueName =
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1E9) +
-            path.extname(file.originalname);
-
-        cb(null, uniqueName);
-    }
-
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const upload = multer({
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => {
+        const isPdf = file.mimetype === "application/pdf";
+        const baseName = file.originalname
+            .replace(/\.[^/.]+$/, "")
+            .replace(/[^a-zA-Z0-9_-]/g, "_");   // remove spaces/special chars
 
+        return {
+            folder: "collabnotes/attachments",
+            // PDFs must be "raw", images stay "image"
+            resource_type: isPdf ? "raw" : "image",
+            // raw files need the extension inside public_id
+            public_id: `${Date.now()}-${Math.round(Math.random() * 1e9)}-${baseName}${isPdf ? ".pdf" : ""}`,
+            ...(isPdf ? {} : { allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"] })
+        };
+    }
+});
+
+
+
+const upload = multer({
     storage: storage,
 
     limits: {
@@ -149,7 +160,6 @@ const upload = multer({
     },
 
     fileFilter: (req, file, cb) => {
-
         const allowedTypes = [
             "image/jpeg",
             "image/png",
@@ -167,10 +177,9 @@ const upload = multer({
                 )
             );
         }
-
     }
-
 });
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -701,7 +710,8 @@ app.post(
                 newNote.file = {
                     name: req.file.originalname,
                     type: req.file.mimetype,
-                    url: `/uploads/${req.file.filename}`
+                    url: req.file.path
+
                 };
             }
 
@@ -913,79 +923,94 @@ app.patch(
 // Update note
 // ==============================
 
-app.put("/api/notes/:id", authenticateToken, async (req, res) => {
+app.put(
+    "/api/notes/:id",
+    authenticateToken,
+    upload.single("file"),
+    async (req, res) => {
 
-    try {
+        try {
 
-        const id = Number(req.params.id);
+            const id = Number(req.params.id);
 
-        const userEmail = req.user.email;
+            const userEmail = req.user.email;
 
-        const {
-            title,
-            content,
-            folder,
-            visibility
-        } = req.body;
+            const {
+                title,
+                content,
+                folder,
+                visibility
+            } = req.body;
 
-        // Find note in MongoDB
-        const note = await Note.findOne({
-            id: id
-        });
+            // Find note in MongoDB
+            const note = await Note.findOne({
+                id: id
+            });
 
-        if (!note) {
-            return res.status(404).json({
+            if (!note) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Note not found."
+                });
+            }
+
+            // Only owner can edit
+            if (note.ownerEmail !== userEmail) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You can only edit your own notes."
+                });
+            }
+
+            // Update fields
+            if (title) {
+                note.title = title.trim();
+            }
+
+            if (content) {
+                note.content = content.trim();
+            }
+
+            if (folder) {
+                note.folder = folder;
+            }
+
+            if (visibility === "public") {
+                note.visibility = "public";
+            } else if (visibility === "private") {
+                note.visibility = "private";
+            }
+
+
+            // Update attachment only when a new file is uploaded
+            if (req.file) {
+                note.file = {
+                    name: req.file.originalname,
+                    type: req.file.mimetype,
+                    url: req.file.path
+                };
+            }
+
+            // Save updated note in MongoDB
+            await note.save();
+
+
+            res.json({
+                success: true,
+                message: "Note updated successfully.",
+                note: note
+            });
+
+        } catch (error) {
+
+            console.error("Update note error:", error);
+
+            res.status(500).json({
                 success: false,
-                message: "Note not found."
+                message: "Failed to update note."
             });
         }
-
-        // Only owner can edit
-        if (note.ownerEmail !== userEmail) {
-            return res.status(403).json({
-                success: false,
-                message: "You can only edit your own notes."
-            });
-        }
-
-        // Update fields
-        if (title) {
-            note.title = title.trim();
-        }
-
-        if (content) {
-            note.content = content.trim();
-        }
-
-        if (folder) {
-            note.folder = folder;
-        }
-
-        if (visibility === "public") {
-            note.visibility = "public";
-        } else if (visibility === "private") {
-            note.visibility = "private";
-        }
-
-        // Mongoose timestamps automatically update updatedAt
-        await note.save();
-
-        res.json({
-            success: true,
-            message: "Note updated successfully.",
-            note: note
-        });
-
-    } catch (error) {
-
-        console.error("Update note error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Failed to update note."
-        });
-    }
-});
+    });
 
 
 // ==============================

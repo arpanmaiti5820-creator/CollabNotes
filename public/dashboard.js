@@ -461,14 +461,27 @@ async function openNote(id) {
     }
 
     // PDF
+
+    // PDF
     else if (file.type === "application/pdf") {
-      const pdf = document.createElement("iframe");
+      const wrapper = document.createElement("div");
 
-      pdf.src = file.url;
-      pdf.title = file.name;
+      const pdf = document.createElement("object");
+      pdf.data = file.url;
+      pdf.type = "application/pdf";
+      pdf.style.width = "100%";
+      pdf.style.height = "600px";
 
-      viewerFile.appendChild(pdf);
+      const fallback = document.createElement("p");
+      fallback.innerHTML =
+        `Your browser can't preview this PDF. ` +
+        `<a href="${file.url}" target="_blank" rel="noopener">Open PDF in new tab</a>`;
+      pdf.appendChild(fallback);
+
+      wrapper.appendChild(pdf);
+      viewerFile.appendChild(wrapper);
     }
+
 
     viewerModal.classList.remove("hidden");
   } catch (error) {
@@ -1131,22 +1144,17 @@ noteForm.addEventListener("submit", async (event) => {
   try {
     let response;
 
+
     if (editingNoteId) {
       response = await fetch(`/api/notes/${editingNoteId}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body: JSON.stringify({
-          title: title,
-          content: content,
-          folder: noteFolder.value,
-          visibility: getSelectedVisibility(),
-          ownerEmail: currentUser?.email || "",
-        }),
+        body: formData
       });
-    } else {
+    }
+    else {
       const token = localStorage.getItem("token");
 
       response = await fetch("/api/notes", {
@@ -1541,24 +1549,24 @@ async function toggleLike(id) {
 }
 
 function renderTrashNotes(trashNotes) {
-    notesGrid.innerHTML = "";
+  notesGrid.innerHTML = "";
 
-    if (!trashNotes.length) {
-        notesGrid.innerHTML = `
+  if (!trashNotes.length) {
+    notesGrid.innerHTML = `
             <div class="empty-notes">
                 <div class="empty-icon">🗑️</div>
                 <h3>Trash is empty</h3>
                 <p>Deleted notes will appear here.</p>
             </div>
         `;
-        return;
-    }
+    return;
+  }
 
-    trashNotes.forEach((note) => {
-        const card = document.createElement("article");
-        card.className = "note-card trash-note-card";
+  trashNotes.forEach((note) => {
+    const card = document.createElement("article");
+    card.className = "note-card trash-note-card";
 
-        card.innerHTML = `
+    card.innerHTML = `
             <div class="trash-note-heading">
                 <span class="trash-note-folder">
                     📁 ${escapeHTML(note.folder || "General")}
@@ -1598,8 +1606,8 @@ function renderTrashNotes(trashNotes) {
             </div>
         `;
 
-        notesGrid.appendChild(card);
-    });
+    notesGrid.appendChild(card);
+  });
 }
 
 async function restoreNote(id) {
