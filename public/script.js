@@ -229,75 +229,68 @@ signupForm.addEventListener("submit", async (event) => {
 
 const googleBtn = document.getElementById("googleBtn");
 
-let googleInitialized = false;
-let googleHiddenHolder = null;
+let googleTokenClient = null;
 
-// Initialize Google Identity Services only ONCE
-function initGoogleLogin() {
-    if (googleInitialized) return true;
+// Google's official "custom button" flow: our own button opens the
+// Google sign-in popup directly (no hidden iframe, no One Tap/FedCM).
+function getGoogleTokenClient() {
+    if (googleTokenClient) return googleTokenClient;
 
     if (
         !window.google ||
         !google.accounts ||
-        !google.accounts.id
+        !google.accounts.oauth2
     ) {
-        return false;
+        return null;
     }
 
-    google.accounts.id.initialize({
+    googleTokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleLogin
+        scope: "openid email profile",
+        callback: handleGoogleToken,
+        error_callback: (error) => {
+            console.error("Google login error:", error);
+
+            if (error && error.type === "popup_closed") return;
+
+            if (error && error.type === "popup_failed_to_open") {
+                alert("Please allow popups for this site and try again.");
+                return;
+            }
+
+            alert("Google login failed. Please try again.");
+        }
     });
 
-    // Hidden official Google button. Our custom button clicks it,
-    // which is more reliable than One Tap prompt() (no FedCM aborts).
-    googleHiddenHolder = document.createElement("div");
-    googleHiddenHolder.style.cssText =
-        "position:fixed;left:-9999px;top:0;width:240px;height:44px;" +
-        "opacity:0;pointer-events:none;overflow:hidden;";
-    document.body.appendChild(googleHiddenHolder);
-
-    google.accounts.id.renderButton(googleHiddenHolder, {
-        type: "standard",
-        theme: "outline",
-        size: "large",
-        width: 240
-    });
-
-    googleInitialized = true;
-    return true;
+    return googleTokenClient;
 }
 
-// Try to prepare as soon as the Google script has loaded
-window.addEventListener("load", () => {
-    let tries = 0;
-
-    const timer = setInterval(() => {
-        tries++;
-
-        if (initGoogleLogin() || tries > 40) {
-            clearInterval(timer);
-        }
-    }, 250);
-});
-
 googleBtn.addEventListener("click", () => {
-    if (!initGoogleLogin()) {
+    const client = getGoogleTokenClient();
+
+    if (!client) {
         alert("Google Login is still loading. Please try again.");
         return;
     }
 
-    const innerButton = googleHiddenHolder.querySelector('div[role="button"]');
-
-    if (innerButton) {
-        innerButton.click();
-    } else {
-        // Fallback to One Tap if the button has not rendered yet
-        google.accounts.id.prompt();
-    }
+    // Must run directly inside the click so the popup is not blocked
+    client.requestAccessToken({ prompt: "select_account" });
 });
 
-async function handleGoogleLogin(response) {
+async function handleGoogleToken(tokenResponse) {
+    if (
+        !tokenResponse ||
+        tokenResponse.error ||
+        !tokenResponse.access_token
+    ) {
+        console.error("Google token error:", tokenResponse);
+        alert("Google login failed. Please try again.");
+        return;
+    }
+
+    loginMessage.className = "message";
+    loginMessage.textContent = "Signing in with Google...";
+
     try {
         const res = await fetch("/api/google-login", {
             method: "POST",
@@ -305,13 +298,14 @@ async function handleGoogleLogin(response) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                credential: response.credential
+                accessToken: tokenResponse.access_token
             })
         });
 
         const data = await res.json();
 
         if (!res.ok || !data.success) {
+            loginMessage.textContent = "";
             alert(data.message || "Google login failed.");
             return;
         }
@@ -326,9 +320,11 @@ async function handleGoogleLogin(response) {
 
     } catch (error) {
         console.error("Google login error:", error);
+        loginMessage.textContent = "";
         alert("Something went wrong during Google login.");
     }
 }
+
 // -------------------------
 // Forgot Password
 // -------------------------

@@ -1524,22 +1524,70 @@ app.post("/api/reset-password", async (req, res) => {
 
 app.post("/api/google-login", async (req, res) => {
     try {
-        const { credential } = req.body;
+        const { credential, accessToken } = req.body;
 
-        if (!credential) {
+        if (!credential && !accessToken) {
             return res.status(400).json({
                 success: false,
                 message: "Google credential is required."
             });
         }
 
-        // Verify Google ID token
-        const ticket = await googleClient.verifyIdToken({
-            idToken: credential,
-            audience: GOOGLE_CLIENT_ID
-        });
+        let payload;
 
-        const payload = ticket.getPayload();
+        if (credential) {
+
+            // Verify Google ID token
+            const ticket = await googleClient.verifyIdToken({
+                idToken: credential,
+                audience: GOOGLE_CLIENT_ID
+            });
+
+            payload = ticket.getPayload();
+
+        } else {
+
+            // Verify Google access token (custom Google button flow)
+            const tokenInfoResponse = await fetch(
+                "https://oauth2.googleapis.com/tokeninfo?access_token=" +
+                encodeURIComponent(accessToken)
+            );
+
+            if (!tokenInfoResponse.ok) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid Google credential."
+                });
+            }
+
+            const tokenInfo = await tokenInfoResponse.json();
+
+            // Token must have been issued to OUR Google client
+            if (tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid Google credential."
+                });
+            }
+
+            const profileResponse = await fetch(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+            if (!profileResponse.ok) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Could not read Google profile."
+                });
+            }
+
+            payload = await profileResponse.json();
+        }
 
         if (!payload) {
             return res.status(401).json({
