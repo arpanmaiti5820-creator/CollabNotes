@@ -1,0 +1,987 @@
+/* =========================================================
+   CollabNotes — Dashboard animations
+   Animation-only layer. Loaded AFTER dashboard.css.
+   Same colors as your theme; no layout or logic changes.
+========================================================= */
+
+:root {
+  --fx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fx-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------------------------------------------------------
+   Ambient background glow (behind everything)
+--------------------------------------------------------- */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -15%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(109, 93, 252, 0.11), transparent 38%),
+    radial-gradient(circle at 88% 72%, rgba(109, 93, 252, 0.08), transparent 40%);
+  animation: fxAmbient 20s ease-in-out infinite alternate;
+}
+
+@keyframes fxAmbient {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(-3%, 4%) scale(1.12);
+  }
+}
+
+/* ---------------------------------------------------------
+   Sidebar
+--------------------------------------------------------- */
+
+.sidebar .logo {
+  animation: fxSlideIn 0.7s var(--fx-ease) both;
+}
+
+.logo-icon {
+  animation: fxLogoPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes fxLogoPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(109, 93, 252, 0.45);
+  }
+
+  50% {
+    box-shadow: 0 0 0 9px rgba(109, 93, 252, 0);
+  }
+}
+
+.sidebar nav>* {
+  animation: fxSlideIn 0.6s var(--fx-ease) both;
+  animation-delay: 0.6s;
+}
+
+.sidebar nav> :nth-child(1) {
+  animation-delay: 0.10s;
+}
+
+.sidebar nav> :nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.sidebar nav> :nth-child(3) {
+  animation-delay: 0.22s;
+}
+
+.sidebar nav> :nth-child(4) {
+  animation-delay: 0.28s;
+}
+
+.sidebar nav> :nth-child(5) {
+  animation-delay: 0.34s;
+}
+
+.sidebar nav> :nth-child(6) {
+  animation-delay: 0.40s;
+}
+
+.sidebar nav> :nth-child(7) {
+  animation-delay: 0.46s;
+}
+
+.sidebar nav> :nth-child(8) {
+  animation-delay: 0.52s;
+}
+
+.sidebar .sidebar-bottom {
+  animation: fxFadeUp 0.7s 0.5s var(--fx-ease) both;
+}
+
+@keyframes fxSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* nav items: sliding active bar + icon bounce */
+.nav-item {
+  position: relative;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    padding-left 0.3s var(--fx-ease);
+}
+
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 3px;
+  background: #6d5dfc;
+  transform: scaleY(0);
+  transition: transform 0.35s var(--fx-spring);
+}
+
+.nav-item.active::before {
+  transform: scaleY(1);
+}
+
+.nav-item:hover {
+  padding-left: 16px;
+}
+
+.nav-item>span:first-child {
+  display: inline-block;
+  transition: transform 0.35s var(--fx-spring);
+}
+
+.nav-item:hover>span:first-child {
+  transform: scale(1.22) rotate(-8deg);
+}
+
+.new-folder {
+  transition: color 0.2s ease, transform 0.25s var(--fx-ease), background 0.2s ease;
+}
+
+.new-folder:hover {
+  color: #ffffff;
+  background: rgba(109, 93, 252, 0.12);
+  border-radius: 8px;
+  transform: translateX(4px);
+}
+
+/* smoother open / close of the sidebar */
+@media (min-width: 701px) {
+  .sidebar {
+    transition: transform 0.55s var(--fx-ease);
+  }
+
+  .main {
+    transition:
+      margin-left 0.55s var(--fx-ease),
+      width 0.55s var(--fx-ease);
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    transition: left 0.45s var(--fx-ease);
+  }
+}
+
+.avatar {
+  transition: transform 0.3s var(--fx-spring), box-shadow 0.3s ease;
+}
+
+.user:hover .avatar {
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 0 0 4px rgba(109, 93, 252, 0.22);
+}
+
+/* ---------------------------------------------------------
+   Top bar
+--------------------------------------------------------- */
+
+/* "backwards" (not "both") so the topbar keeps no leftover transform:
+   a leftover transform traps the notification panel inside the topbar
+   and lets the cards paint on top of it. Looks identical. */
+.topbar {
+  animation: fxFadeDown 0.7s var(--fx-ease) backwards;
+  position: relative;
+  z-index: 100;
+}
+
+@keyframes fxFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 701px) {
+  .search-box {
+    transition:
+      width 0.45s var(--fx-ease),
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .search-box:focus-within {
+    width: 460px;
+  }
+}
+
+.search-box>span {
+  transition: transform 0.35s var(--fx-spring), color 0.25s ease;
+}
+
+.search-box:focus-within>span {
+  color: #8175ff;
+  transform: scale(1.2) rotate(-10deg);
+}
+
+.top-avatar {
+  transition: transform 0.3s var(--fx-spring), box-shadow 0.3s ease;
+}
+
+.top-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(109, 93, 252, 0.25);
+}
+
+/* bell rings gently while there are unread notifications */
+.notification-wrapper:has(.notification-badge:not(.hidden)) #notificationBtn {
+  transform-origin: 50% 0;
+  animation: fxBell 4.5s 1s ease-in-out infinite;
+}
+
+@keyframes fxBell {
+
+  0%,
+  12%,
+  100% {
+    transform: rotate(0);
+  }
+
+  2% {
+    transform: rotate(16deg);
+  }
+
+  4% {
+    transform: rotate(-14deg);
+  }
+
+  6% {
+    transform: rotate(10deg);
+  }
+
+  8% {
+    transform: rotate(-6deg);
+  }
+
+  10% {
+    transform: rotate(3deg);
+  }
+}
+
+.notification-badge:not(.hidden) {
+  animation:
+    fxPop 0.5s var(--fx-spring) both,
+    fxBadgePulse 2.4s 0.6s ease-out infinite;
+}
+
+@keyframes fxPop {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes fxBadgePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.55);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px rgba(239, 83, 80, 0);
+  }
+}
+
+/* notification panel */
+.notification-panel {
+  transform-origin: top right;
+  animation: fxPanel 0.35s var(--fx-spring);
+}
+
+@keyframes fxPanel {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notification-item {
+  animation: fxSlideIn 0.4s var(--fx-ease) both;
+}
+
+.notification-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.notification-item:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.notification-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.notification-item:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.notification-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.notification-item:nth-child(n + 6) {
+  animation-delay: 0.30s;
+}
+
+.notification-item.unread::before {
+  animation: fxDotPulse 2s ease-in-out infinite;
+}
+
+@keyframes fxDotPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(117, 102, 240, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(117, 102, 240, 0);
+  }
+}
+
+.notification-empty-icon {
+  animation: fxFloat 3s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------
+   Welcome area
+--------------------------------------------------------- */
+
+.welcome .eyebrow {
+  animation: fxEyebrow 1s 0.15s var(--fx-ease) both;
+}
+
+@keyframes fxEyebrow {
+  from {
+    opacity: 0;
+    letter-spacing: 8px;
+  }
+
+  to {
+    opacity: 1;
+    letter-spacing: 2px;
+  }
+}
+
+.welcome h1 {
+  animation: fxBlurUp 0.9s 0.25s var(--fx-ease) both;
+}
+
+.welcome p:not(.eyebrow) {
+  animation: fxBlurUp 0.9s 0.4s var(--fx-ease) both;
+}
+
+@keyframes fxBlurUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.create-btn {
+  position: relative;
+  overflow: hidden;
+  animation:
+    fxPop 0.7s 0.5s var(--fx-spring) both,
+    fxCtaGlow 3.2s 1.6s ease-in-out infinite;
+  transition:
+    transform 0.25s var(--fx-ease),
+    box-shadow 0.25s ease,
+    background 0.2s ease;
+}
+
+@keyframes fxCtaGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(109, 93, 252, 0.45);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(109, 93, 252, 0);
+  }
+}
+
+.create-btn::after,
+.save-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.create-btn:hover::after,
+.save-btn:hover::after {
+  left: 130%;
+  transition: left 0.75s var(--fx-ease);
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(109, 93, 252, 0.4);
+  animation-play-state: paused;
+}
+
+.create-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---------------------------------------------------------
+   Stat cards
+--------------------------------------------------------- */
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  animation: fxRise 0.75s var(--fx-ease) both;
+  transition:
+    transform 0.35s var(--fx-ease),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.stat-card:nth-child(1) {
+  animation-delay: 0.45s;
+}
+
+.stat-card:nth-child(2) {
+  animation-delay: 0.55s;
+}
+
+.stat-card:nth-child(3) {
+  animation-delay: 0.65s;
+}
+
+.stat-card:nth-child(4) {
+  animation-delay: 0.75s;
+}
+
+@keyframes fxRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(109, 93, 252, 0.45);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card>span {
+  display: inline-block;
+  transition: transform 0.45s var(--fx-spring);
+}
+
+.stat-card:hover>span {
+  transform: scale(1.25) rotate(-10deg);
+}
+
+.stat-card strong.fx-bump {
+  animation: fxBump 0.45s var(--fx-spring);
+}
+
+@keyframes fxBump {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.28);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* cursor spotlight on cards (position set by JS) */
+.stat-card::after,
+.note-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(109, 93, 252, 0.16),
+      transparent 65%);
+}
+
+.stat-card:hover::after,
+.note-card:hover::after {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------
+   Section header + notes grid
+--------------------------------------------------------- */
+
+.section-header {
+  animation: fxFadeUp 0.8s 0.85s var(--fx-ease) both;
+}
+
+@keyframes fxFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* cards cascade in. "backwards" (not "both") so hover lift keeps working */
+.note-card {
+  animation: fxCardIn 0.65s var(--fx-ease) backwards;
+  transition:
+    transform 0.35s var(--fx-ease),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.note-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.note-card:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.note-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.note-card:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.note-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.note-card:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+.note-card:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.note-card:nth-child(8) {
+  animation-delay: 0.40s;
+}
+
+.note-card:nth-child(9) {
+  animation-delay: 0.45s;
+}
+
+.note-card:nth-child(10) {
+  animation-delay: 0.50s;
+}
+
+.note-card:nth-child(11) {
+  animation-delay: 0.55s;
+}
+
+.note-card:nth-child(n + 12) {
+  animation-delay: 0.60s;
+}
+
+@keyframes fxCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.note-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(109, 93, 252, 0.5);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(109, 93, 252, 0.12);
+}
+
+/* accent bar sweeps in from the left instead of just fading */
+.note-card::before {
+  opacity: 1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--fx-ease);
+}
+
+.note-card:hover::before {
+  transform: scaleX(1);
+}
+
+.note-card h3 {
+  transition: color 0.25s ease, transform 0.3s var(--fx-ease);
+}
+
+.note-card:hover h3 {
+  transform: translateX(3px);
+}
+
+/* actions */
+.note-actions button:hover {
+  transform: translateY(-3px) scale(1.08);
+}
+
+.like-btn.liked,
+.favorite-btn.is-favorite {
+  animation: fxHeart 0.5s var(--fx-spring);
+}
+
+@keyframes fxHeart {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.35);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.visibility-badge {
+  transition: transform 0.25s var(--fx-spring);
+}
+
+.note-card:hover .visibility-badge {
+  transform: scale(1.06);
+}
+
+/* ---------------------------------------------------------
+   Loading, empty and error states
+--------------------------------------------------------- */
+
+.loading-notes {
+  animation: fxPulseText 1.6s ease-in-out infinite;
+}
+
+@keyframes fxPulseText {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.loading-spinner {
+  box-shadow: 0 0 18px rgba(109, 93, 252, 0.35);
+}
+
+.empty-notes,
+.empty-state,
+.notes-error {
+  animation: fxFadeUp 0.7s var(--fx-ease) both;
+}
+
+.empty-icon,
+.empty-state-icon {
+  display: inline-block;
+  animation: fxFloat 3.2s ease-in-out infinite;
+}
+
+.error-icon {
+  display: inline-block;
+  animation: fxWobble 2.8s ease-in-out infinite;
+}
+
+@keyframes fxFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes fxWobble {
+
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20% {
+    transform: rotate(-9deg);
+  }
+
+  40% {
+    transform: rotate(8deg);
+  }
+
+  60% {
+    transform: rotate(-4deg);
+  }
+
+  80% {
+    transform: rotate(2deg);
+  }
+}
+
+.empty-create-btn,
+.retry-btn,
+.folder-create-btn,
+.save-btn,
+.cancel-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.save-btn {
+  transition: transform 0.25s var(--fx-ease), box-shadow 0.25s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(109, 93, 252, 0.38);
+}
+
+.save-btn:active,
+.cancel-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---------------------------------------------------------
+   Modals, dialogs and toast
+--------------------------------------------------------- */
+
+.modal:not(.hidden),
+.viewer-modal:not(.hidden),
+.folder-modal:not(.hidden),
+.confirm-modal:not(.hidden) {
+  animation: fxBackdrop 0.3s ease both;
+}
+
+@keyframes fxBackdrop {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* springy pop-in for every dialog card */
+.modal-card,
+.viewer-card,
+.folder-modal-box,
+.confirm-card,
+.delete-folder-modal-card {
+  animation: fxDialog 0.5s var(--fx-spring) both;
+}
+
+@keyframes fxDialog {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.confirm-icon,
+.delete-folder-icon,
+.delete-confirm-icon,
+.folder-modal-icon {
+  animation: fxIconPop 0.7s 0.15s var(--fx-spring) both;
+}
+
+@keyframes fxIconPop {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-25deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+.modal-header button:hover,
+.viewer-header button:hover,
+.folder-modal-close:hover {
+  transform: rotate(90deg);
+}
+
+/* the selected visibility option glows */
+.visibility-option {
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s var(--fx-ease);
+}
+
+.visibility-option:hover {
+  transform: translateY(-2px);
+}
+
+.visibility-option:has(input:checked) {
+  border-color: #6d5dfc;
+  background: rgba(109, 93, 252, 0.09);
+  box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.1);
+}
+
+.file-preview img {
+  animation: fxDialog 0.5s var(--fx-spring) both;
+}
+
+/* toast: springs in with a draining progress bar */
+.toast {
+  overflow: hidden;
+  transform: translateY(28px) scale(0.94);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s var(--fx-spring);
+}
+
+.toast.show {
+  transform: translateY(0) scale(1);
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: #6d5dfc;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.toast.show::after {
+  animation: fxToastBar 3s linear forwards;
+}
+
+.toast.success::after {
+  background: #2f9e44;
+}
+
+.toast.error::after {
+  background: #e05252;
+}
+
+@keyframes fxToastBar {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* click ripple (created by dashboard-animations.js) */
+.fx-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  pointer-events: none;
+  animation: fxRipple 0.65s ease-out forwards;
+}
+
+@keyframes fxRipple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.create-btn,
+.new-folder {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------
+   Accessibility: respect reduced motion
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+}

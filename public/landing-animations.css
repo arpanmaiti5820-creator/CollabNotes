@@ -1,0 +1,466 @@
+/* =========================================================
+   CollabNotes — Landing page animations
+   Animation-only layer. Loaded AFTER style.css.
+   No colors from the theme are changed (same purples only).
+========================================================= */
+
+:root {
+    --fx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --fx-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------------------------------------------------------
+   HERO: living background
+--------------------------------------------------------- */
+
+.hero-section {
+    overflow: hidden;
+    --mx: 70%;
+    --my: 30%;
+}
+
+/* everything real sits above the effects layer */
+.hero-section > *:not(.fx-layer) {
+    position: relative;
+    z-index: 2;
+}
+
+/* soft spotlight that follows the cursor */
+.hero-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(
+        480px circle at var(--mx) var(--my),
+        rgba(109, 93, 252, 0.14),
+        transparent 60%
+    );
+}
+
+.fx-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* slowly panning grid, faded at the edges */
+.fx-grid {
+    position: absolute;
+    inset: -60px;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%);
+    animation: fxGridPan 24s linear infinite;
+}
+
+@keyframes fxGridPan {
+    to {
+        transform: translate(56px, 56px);
+    }
+}
+
+/* drifting glow orbs */
+.fx-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    will-change: transform;
+}
+
+.fx-orb.one {
+    width: 420px;
+    height: 420px;
+    top: -120px;
+    right: -100px;
+    background: rgba(109, 93, 252, 0.28);
+    animation: fxOrbOne 16s ease-in-out infinite alternate;
+}
+
+.fx-orb.two {
+    width: 340px;
+    height: 340px;
+    bottom: -120px;
+    left: -80px;
+    background: rgba(109, 93, 252, 0.18);
+    animation: fxOrbTwo 20s ease-in-out infinite alternate;
+}
+
+@keyframes fxOrbOne {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(-70px, 90px) scale(1.2); }
+}
+
+@keyframes fxOrbTwo {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(90px, -60px) scale(1.15); }
+}
+
+/* rising particles */
+.fx-dot {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: #8175ff;
+    opacity: 0;
+    animation: fxRise linear infinite;
+}
+
+@keyframes fxRise {
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-105vh) translateX(var(--sway, 30px)); opacity: 0; }
+}
+
+/* ---------------------------------------------------------
+   HERO: one orchestrated entrance
+--------------------------------------------------------- */
+
+.brand {
+    animation: fxFadeDown 0.8s var(--fx-ease) both;
+}
+
+.brand-icon {
+    animation: fxLogoPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes fxLogoPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(109, 93, 252, 0.45); }
+    50%      { box-shadow: 0 0 0 10px rgba(109, 93, 252, 0); }
+}
+
+.hero-content .eyebrow {
+    animation: fxEyebrow 1s 0.2s var(--fx-ease) both;
+}
+
+@keyframes fxEyebrow {
+    from { opacity: 0; letter-spacing: 8px; }
+    to   { opacity: 1; letter-spacing: 2px; }
+}
+
+/* headline: words slide up from a mask */
+.fx-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+}
+
+.fx-word-in {
+    display: inline-block;
+    font-style: normal;
+    transform: translateY(110%);
+    animation: fxWordUp 0.9s var(--fx-ease) forwards;
+    animation-delay: var(--d, 0s);
+}
+
+@keyframes fxWordUp {
+    to { transform: translateY(0); }
+}
+
+/* the highlighted line breathes with a soft glow */
+.hero-content h1 > span {
+    animation: fxGlowText 4s 1.6s ease-in-out infinite;
+}
+
+@keyframes fxGlowText {
+    0%, 100% { text-shadow: 0 0 0 rgba(129, 117, 255, 0); }
+    50%      { text-shadow: 0 0 36px rgba(129, 117, 255, 0.45); }
+}
+
+.hero-description {
+    animation: fxFadeUp 0.9s 0.85s var(--fx-ease) both;
+}
+
+.feature {
+    animation: fxFeatureIn 0.8s var(--fx-ease) both;
+    transition: transform 0.3s var(--fx-ease);
+}
+
+.feature:nth-child(1) { animation-delay: 1.0s; }
+.feature:nth-child(2) { animation-delay: 1.15s; }
+.feature:nth-child(3) { animation-delay: 1.3s; }
+
+.feature:hover {
+    transform: translateX(6px);
+}
+
+.feature > span {
+    transition: transform 0.35s var(--fx-spring), background 0.3s ease;
+}
+
+.feature:hover > span {
+    transform: scale(1.18) rotate(-8deg);
+    background: rgba(109, 93, 252, 0.3);
+}
+
+@keyframes fxFeatureIn {
+    from { opacity: 0; transform: translateX(-28px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.hero-footer {
+    animation: fxFadeUp 0.8s 1.5s ease both;
+}
+
+/* ---------------------------------------------------------
+   FORM SIDE
+--------------------------------------------------------- */
+
+.form-section {
+    position: relative;
+    overflow: hidden;
+}
+
+/* faint breathing glow behind the card */
+.form-section::before {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    top: 50%;
+    left: 50%;
+    margin: -260px 0 0 -260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(109, 93, 252, 0.13), transparent 65%);
+    pointer-events: none;
+    animation: fxBreathe 7s ease-in-out infinite;
+}
+
+@keyframes fxBreathe {
+    0%, 100% { transform: scale(0.9); opacity: 0.7; }
+    50%      { transform: scale(1.15); opacity: 1; }
+}
+
+.auth-card {
+    position: relative;
+    z-index: 1;
+    animation: fxCardIn 1s 0.3s var(--fx-ease) both;
+}
+
+@keyframes fxCardIn {
+    from { opacity: 0; transform: translateX(50px) scale(0.97); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.form-header h2,
+.form-header p {
+    animation: fxFadeUp 0.7s 0.6s var(--fx-ease) both;
+}
+
+.form-header p {
+    animation-delay: 0.7s;
+}
+
+/* title swaps animate whenever login <-> signup is toggled */
+.form-header.fx-swap h2,
+.form-header.fx-swap p {
+    animation: fxSwapText 0.5s var(--fx-ease) both;
+}
+
+@keyframes fxSwapText {
+    from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* forms: stagger the fields in, replay on every mode switch */
+#loginForm:not(.hidden) .input-group,
+#signupForm:not(.hidden) .input-group,
+#loginForm:not(.hidden) .primary-btn,
+#signupForm:not(.hidden) .primary-btn {
+    animation: fxFadeUp 0.7s var(--fx-ease) both;
+}
+
+#loginForm:not(.hidden) .input-group:nth-child(1),
+#signupForm:not(.hidden) .input-group:nth-child(1) { animation-delay: 0.8s; }
+
+#loginForm:not(.hidden) .input-group:nth-child(2),
+#signupForm:not(.hidden) .input-group:nth-child(2) { animation-delay: 0.9s; }
+
+#signupForm:not(.hidden) .input-group:nth-child(3) { animation-delay: 1s; }
+
+#loginForm:not(.hidden) .primary-btn { animation-delay: 1s; }
+#signupForm:not(.hidden) .primary-btn { animation-delay: 1.1s; }
+
+.divider,
+.google-btn,
+.switch-text {
+    animation: fxFadeUp 0.7s var(--fx-ease) both;
+}
+
+.divider    { animation-delay: 1.15s; }
+.google-btn { animation-delay: 1.25s; }
+.switch-text { animation-delay: 1.35s; }
+
+/* once the intro is done, JS adds .fx-ready so mode switches are quick */
+.fx-ready #loginForm:not(.hidden) .input-group,
+.fx-ready #signupForm:not(.hidden) .input-group,
+.fx-ready #loginForm:not(.hidden) .primary-btn,
+.fx-ready #signupForm:not(.hidden) .primary-btn {
+    animation-delay: 0s !important;
+}
+
+.fx-ready #signupForm:not(.hidden) .input-group:nth-child(2) { animation-delay: 0.06s !important; }
+.fx-ready #signupForm:not(.hidden) .input-group:nth-child(3) { animation-delay: 0.12s !important; }
+.fx-ready #loginForm:not(.hidden) .input-group:nth-child(2)  { animation-delay: 0.06s !important; }
+.fx-ready #loginForm:not(.hidden) .primary-btn { animation-delay: 0.12s !important; }
+.fx-ready #signupForm:not(.hidden) .primary-btn { animation-delay: 0.18s !important; }
+
+/* ---------------------------------------------------------
+   Inputs, buttons, feedback
+--------------------------------------------------------- */
+
+.input-group label {
+    transition: color 0.25s ease, transform 0.25s var(--fx-ease);
+}
+
+.input-group:focus-within label {
+    color: #a59dff;
+    transform: translateX(3px);
+}
+
+.label-row a {
+    position: relative;
+}
+
+.label-row a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--fx-ease);
+}
+
+.label-row a:hover::after {
+    transform: scaleX(1);
+}
+
+/* primary button: light sweep + lift */
+.primary-btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s var(--fx-ease), box-shadow 0.25s ease, background 0.2s;
+}
+
+.primary-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        100deg,
+        transparent,
+        rgba(255, 255, 255, 0.28),
+        transparent
+    );
+    transform: skewX(-20deg);
+}
+
+.primary-btn:hover {
+    box-shadow: 0 10px 28px rgba(109, 93, 252, 0.38);
+}
+
+.primary-btn:hover::after {
+    left: 130%;
+    transition: left 0.75s var(--fx-ease);
+}
+
+.primary-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.google-btn:active {
+    transform: scale(0.98);
+}
+
+.switch-text button {
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.switch-text button:hover {
+    color: #a59dff;
+}
+
+.password-toggle {
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: #b0a8ff;
+}
+
+/* messages pop in; errors shake */
+.message.success,
+.message.error {
+    animation: fxMsgIn 0.4s var(--fx-ease) both;
+}
+
+.message.error {
+    animation: fxMsgIn 0.4s var(--fx-ease) both, fxShake 0.45s 0.1s ease;
+}
+
+@keyframes fxMsgIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fxShake {
+    0%, 100% { translate: 0 0; }
+    20%      { translate: -6px 0; }
+    40%      { translate: 6px 0; }
+    60%      { translate: -4px 0; }
+    80%      { translate: 3px 0; }
+}
+
+/* ---------------------------------------------------------
+   Shared keyframes
+--------------------------------------------------------- */
+
+@keyframes fxFadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fxFadeDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------------------------------------------------
+   Accessibility: respect reduced motion
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        animation-delay: 0s !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .fx-word-in {
+        transform: none;
+    }
+
+    .fx-dot {
+        display: none;
+    }
+}

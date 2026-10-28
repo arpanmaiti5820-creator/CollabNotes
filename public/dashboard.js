@@ -403,6 +403,161 @@ myNotesBtn.addEventListener("click", () => {
 
   applyNoteFilters();
 });
+// ==============================
+// PDF preview helpers
+// ==============================
+
+const PDFJS_VERSION = "3.11.174";
+const PDFJS_BASE = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}`;
+let pdfJsPromise = null;
+
+function browserCanEmbedPdf() {
+  const isMobileDevice =
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
+
+  if (isMobileDevice) return false;
+
+  if (typeof navigator.pdfViewerEnabled === "boolean") {
+    return navigator.pdfViewerEnabled;
+  }
+
+  return true;
+}
+
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+
+  if (!pdfJsPromise) {
+    pdfJsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `${PDFJS_BASE}/pdf.min.js`;
+      script.onload = () => {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          `${PDFJS_BASE}/pdf.worker.min.js`;
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = () => {
+        pdfJsPromise = null;
+        reject(new Error("Could not load PDF viewer."));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  return pdfJsPromise;
+}
+
+// Clean, professional card with Open / Download buttons
+function buildPdfFallbackCard(file) {
+  const card = document.createElement("div");
+  card.className = "pdf-fallback-card";
+
+  const safeUrl = encodeURI(decodeURI(file.url));
+
+  card.innerHTML = `
+    <div class="pdf-fallback-icon">📄</div>
+
+    <div class="pdf-fallback-info">
+      <strong>${escapeHTML(file.name || "Document.pdf")}</strong>
+      <small>PDF document</small>
+    </div>
+
+    <div class="pdf-fallback-actions">
+      <a
+        class="pdf-btn pdf-btn-primary"
+        href="${safeUrl}"
+        target="_blank"
+        rel="noopener"
+      >
+        Open PDF
+      </a>
+
+      <a
+        class="pdf-btn pdf-btn-secondary"
+        href="${safeUrl}"
+        download="${escapeHTML(file.name || "document.pdf")}"
+        target="_blank"
+        rel="noopener"
+      >
+        Download
+      </a>
+    </div>
+  `;
+
+  return card;
+}
+
+async function renderPdfPages(file, container) {
+  container.className = "pdf-pages";
+  container.innerHTML = `
+    <div class="pdf-loading">
+      <div class="loading-spinner"></div>
+      <span>Loading PDF...</span>
+    </div>
+  `;
+
+  try {
+    const pdfjsLib = await loadPdfJs();
+
+    const pdfDoc = await pdfjsLib.getDocument({ url: file.url }).promise;
+
+    container.innerHTML = "";
+
+    const maxPages = Math.min(pdfDoc.numPages, 30);
+    const targetWidth = Math.max(container.clientWidth, 260);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+    for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
+      const page = await pdfDoc.getPage(pageNumber);
+
+      const baseViewport = page.getViewport({ scale: 1 });
+      const scale = targetWidth / baseViewport.width;
+      const viewport = page.getViewport({ scale: scale * pixelRatio });
+
+      const canvas = document.createElement("canvas");
+      canvas.className = "pdf-page-canvas";
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+
+      container.appendChild(canvas);
+
+      await page.render({
+        canvasContext: canvas.getContext("2d"),
+        viewport,
+      }).promise;
+    }
+
+    // Always keep a way to open the original file
+    const footer = document.createElement("div");
+    footer.className = "pdf-pages-footer";
+
+    footer.innerHTML = `
+      ${pdfDoc.numPages > maxPages
+        ? `<small>Showing first ${maxPages} of ${pdfDoc.numPages} pages</small>`
+        : ""}
+      <a
+        class="pdf-btn pdf-btn-secondary"
+        href="${encodeURI(decodeURI(file.url))}"
+        target="_blank"
+        rel="noopener"
+      >
+        Open full PDF
+      </a>
+    `;
+
+    container.appendChild(footer);
+  } catch (error) {
+    console.error("PDF preview failed:", error);
+
+    container.className = "";
+    container.innerHTML = "";
+    container.appendChild(buildPdfFallbackCard(file));
+  }
+}
+
 async function openNote(id) {
   try {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -461,25 +616,27 @@ async function openNote(id) {
     }
 
     // PDF
-
-    // PDF
     else if (file.type === "application/pdf") {
       const wrapper = document.createElement("div");
 
-      const pdf = document.createElement("object");
-      pdf.data = file.url;
-      pdf.type = "application/pdf";
-      pdf.style.width = "100%";
-      pdf.style.height = "600px";
+      // Desktop browsers with a built-in PDF viewer: embed it
+      if (browserCanEmbedPdf()) {
+        const pdf = document.createElement("object");
+        pdf.data = file.url;
+        pdf.type = "application/pdf";
+        pdf.style.width = "100%";
+        pdf.style.height = "600px";
 
-      const fallback = document.createElement("p");
-      fallback.innerHTML =
-        `Your browser can't preview this PDF. ` +
-        `<a href="${file.url}" target="_blank" rel="noopener">Open PDF in new tab</a>`;
-      pdf.appendChild(fallback);
+        // Safety net if the embed still fails
+        pdf.appendChild(buildPdfFallbackCard(file));
 
-      wrapper.appendChild(pdf);
-      viewerFile.appendChild(wrapper);
+        wrapper.appendChild(pdf);
+        viewerFile.appendChild(wrapper);
+      } else {
+        // Mobile browsers: render the pages ourselves (same look as desktop)
+        viewerFile.appendChild(wrapper);
+        renderPdfPages(file, wrapper);
+      }
     }
 
 
@@ -1212,6 +1369,18 @@ noteForm.addEventListener("submit", async (event) => {
 // ==============================
 
 async function editNote(id) {
+  // Close the expanded mobile card (and its blur overlay) first,
+  // so only the edit modal is left on screen
+  document.querySelectorAll(".mobile-note-overlay").forEach((overlay) => {
+    overlay.remove();
+  });
+
+  document
+    .querySelectorAll(".note-card.mobile-expanded")
+    .forEach((card) => {
+      card.classList.remove("mobile-expanded");
+    });
+
   const note = notes.find((note) => note.id === id);
 
   if (!note) return;
