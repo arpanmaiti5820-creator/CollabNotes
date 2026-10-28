@@ -488,7 +488,9 @@ function buildPdfFallbackCard(file) {
   return card;
 }
 
-async function renderPdfPages(file, container) {
+let currentPdfBlobUrl = null;
+
+async function renderPdfPages(file, container, noteId) {
   container.className = "pdf-pages";
   container.innerHTML = `
     <div class="pdf-loading">
@@ -500,7 +502,44 @@ async function renderPdfPages(file, container) {
   try {
     const pdfjsLib = await loadPdfJs();
 
-    const pdfDoc = await pdfjsLib.getDocument({ url: file.url }).promise;
+    // Load the PDF through our own server (same origin, no CORS problems)
+    let pdfDoc;
+    let downloadHref = encodeURI(decodeURI(file.url));
+    let downloadIsBlob = false;
+
+    try {
+      const fileResponse = await fetch(`/api/notes/${noteId}/file`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!fileResponse.ok) {
+        throw new Error("Could not load PDF file.");
+      }
+
+      const pdfBuffer = await fileResponse.arrayBuffer();
+
+      // Blob for the Download button (created before pdf.js takes the data)
+      if (currentPdfBlobUrl) {
+        URL.revokeObjectURL(currentPdfBlobUrl);
+      }
+
+      currentPdfBlobUrl = URL.createObjectURL(
+        new Blob([pdfBuffer], { type: "application/pdf" })
+      );
+
+      downloadHref = currentPdfBlobUrl;
+      downloadIsBlob = true;
+
+      pdfDoc = await pdfjsLib.getDocument({
+        data: new Uint8Array(pdfBuffer),
+      }).promise;
+    } catch (proxyError) {
+      console.warn("PDF proxy failed, trying direct URL:", proxyError);
+
+      pdfDoc = await pdfjsLib.getDocument({ url: file.url }).promise;
+    }
 
     container.innerHTML = "";
 
@@ -530,23 +569,28 @@ async function renderPdfPages(file, container) {
       }).promise;
     }
 
-    // Always keep a way to open the original file
+    // Always keep a way to save the original file
     const footer = document.createElement("div");
     footer.className = "pdf-pages-footer";
 
     footer.innerHTML = `
       ${pdfDoc.numPages > maxPages
         ? `<small>Showing first ${maxPages} of ${pdfDoc.numPages} pages</small>`
-        : ""}
-      <a
-        class="pdf-btn pdf-btn-secondary"
-        href="${encodeURI(decodeURI(file.url))}"
-        target="_blank"
-        rel="noopener"
-      >
-        Open full PDF
-      </a>
+        : "<small></small>"}
     `;
+
+    const downloadLink = document.createElement("a");
+    downloadLink.className = "pdf-btn pdf-btn-secondary";
+    downloadLink.href = downloadHref;
+    downloadLink.textContent = "Download PDF";
+    downloadLink.setAttribute("download", file.name || "document.pdf");
+
+    if (!downloadIsBlob) {
+      downloadLink.target = "_blank";
+      downloadLink.rel = "noopener";
+    }
+
+    footer.appendChild(downloadLink);
 
     container.appendChild(footer);
   } catch (error) {
@@ -635,7 +679,7 @@ async function openNote(id) {
       } else {
         // Mobile browsers: render the pages ourselves (same look as desktop)
         viewerFile.appendChild(wrapper);
-        renderPdfPages(file, wrapper);
+        renderPdfPages(file, wrapper, note.id);
       }
     }
 
@@ -2099,7 +2143,93 @@ loadNotes();
 const logoutBtn = document.getElementById("logoutBtn");
 const sidebarLogoutBtn = document.getElementById("sidebarLogoutBtn");
 
-function logoutUser() {
+// ==============================
+// Logout confirmation modal
+// ==============================
+
+function showLogoutConfirm() {
+  return new Promise((resolve) => {
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "delete-confirm-overlay";
+
+    overlay.innerHTML = `
+            <div class="delete-confirm-modal">
+
+                <div class="delete-confirm-icon">
+                    🚪
+                </div>
+
+                <h3>Log out?</h3>
+
+                <p>
+                    Are you sure you want to log out of CollabNotes?
+                </p>
+
+                <div class="delete-confirm-actions">
+
+                    <button
+                        class="delete-cancel-btn"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        class="delete-confirm-btn"
+                        type="button"
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+    document.body.appendChild(overlay);
+
+    const cancelButton =
+      overlay.querySelector(".delete-cancel-btn");
+
+    const confirmButton =
+      overlay.querySelector(".delete-confirm-btn");
+
+    function close(result) {
+
+      overlay.classList.add("closing");
+
+      setTimeout(() => {
+        overlay.remove();
+        resolve(result);
+      }, 180);
+    }
+
+    cancelButton.addEventListener("click", () => {
+      close(false);
+    });
+
+    confirmButton.addEventListener("click", () => {
+      close(true);
+    });
+
+    overlay.addEventListener("click", (event) => {
+
+      if (event.target === overlay) {
+        close(false);
+      }
+
+    });
+
+  });
+}
+
+async function logoutUser() {
+  const confirmLogout = await showLogoutConfirm();
+
+  if (!confirmLogout) return;
+
   localStorage.removeItem("user");
   localStorage.removeItem("token");
 

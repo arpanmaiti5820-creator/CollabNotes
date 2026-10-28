@@ -229,14 +229,19 @@ signupForm.addEventListener("submit", async (event) => {
 
 const googleBtn = document.getElementById("googleBtn");
 
-googleBtn.addEventListener("click", () => {
+let googleInitialized = false;
+let googleHiddenHolder = null;
+
+// Initialize Google Identity Services only ONCE
+function initGoogleLogin() {
+    if (googleInitialized) return true;
+
     if (
         !window.google ||
         !google.accounts ||
         !google.accounts.id
     ) {
-        alert("Google Login is still loading. Please try again.");
-        return;
+        return false;
     }
 
     google.accounts.id.initialize({
@@ -244,7 +249,52 @@ googleBtn.addEventListener("click", () => {
         callback: handleGoogleLogin
     });
 
-    google.accounts.id.prompt();
+    // Hidden official Google button. Our custom button clicks it,
+    // which is more reliable than One Tap prompt() (no FedCM aborts).
+    googleHiddenHolder = document.createElement("div");
+    googleHiddenHolder.style.cssText =
+        "position:fixed;left:-9999px;top:0;width:240px;height:44px;" +
+        "opacity:0;pointer-events:none;overflow:hidden;";
+    document.body.appendChild(googleHiddenHolder);
+
+    google.accounts.id.renderButton(googleHiddenHolder, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        width: 240
+    });
+
+    googleInitialized = true;
+    return true;
+}
+
+// Try to prepare as soon as the Google script has loaded
+window.addEventListener("load", () => {
+    let tries = 0;
+
+    const timer = setInterval(() => {
+        tries++;
+
+        if (initGoogleLogin() || tries > 40) {
+            clearInterval(timer);
+        }
+    }, 250);
+});
+
+googleBtn.addEventListener("click", () => {
+    if (!initGoogleLogin()) {
+        alert("Google Login is still loading. Please try again.");
+        return;
+    }
+
+    const innerButton = googleHiddenHolder.querySelector('div[role="button"]');
+
+    if (innerButton) {
+        innerButton.click();
+    } else {
+        // Fallback to One Tap if the button has not rendered yet
+        google.accounts.id.prompt();
+    }
 });
 
 async function handleGoogleLogin(response) {

@@ -3339,461 +3339,628 @@ body {
     transform: translateY(-2px);
   }
 }
+
 @media (max-width: 700px) {
 
-    .note-card {
-        position: relative;
-    }
+  .note-card {
+    position: relative;
+  }
 
-    .mobile-like-count {
-        display: block;
-        position: absolute;
-        right: 16px;
-        bottom: 12px;
-        font-size: 13px;
-        color: #aeb7c6;
-    }
+  .mobile-like-count {
+    display: block;
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    font-size: 13px;
+    color: #aeb7c6;
+  }
 
-    .note-card.mobile-expanded .mobile-like-count {
-        display: none;
-    }
+  .note-card.mobile-expanded .mobile-like-count {
+    display: none;
+  }
 }
+
 /* =========================================
    FOLDER DELETE BUTTON
 ========================================= */
 
 .folder-btn {
-    position: relative;
+  position: relative;
 }
 
 .folder-name {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .delete-folder-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    width: 28px;
-    height: 28px;
+  width: 28px;
+  height: 28px;
 
-    font-size: 14px;
-    cursor: pointer;
+  font-size: 14px;
+  cursor: pointer;
 
-    border-radius: 6px;
-    z-index: 10;
+  border-radius: 6px;
+  z-index: 10;
 }
 
 .delete-folder-btn:hover {
-    background: rgba(255, 80, 80, 0.15);
+  background: rgba(255, 80, 80, 0.15);
 }
+
 /* =========================================
    DELETE FOLDER CONFIRMATION MODAL
 ========================================= */
 
 .delete-folder-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 5000;
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
 
-    display: none;
-    align-items: center;
-    justify-content: center;
+  display: none;
+  align-items: center;
+  justify-content: center;
 
-    padding: 20px;
+  padding: 20px;
 
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .delete-folder-modal.show {
-    display: flex;
+  display: flex;
 }
 
 /* Modal card */
 .delete-folder-modal-card {
-    width: 100%;
-    max-width: 420px;
+  width: 100%;
+  max-width: 420px;
 
-    padding: 28px;
+  padding: 28px;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    background: #11141c;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #11141c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
-    box-shadow:
-        0 25px 80px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
 
-    text-align: center;
+  text-align: center;
 
-    animation: deleteModalAppear 0.2s ease-out;
+  animation: deleteModalAppear 0.2s ease-out;
 }
 
 @keyframes deleteModalAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.92) translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* Trash icon */
 .delete-folder-icon {
-    width: 58px;
-    height: 58px;
+  width: 58px;
+  height: 58px;
 
-    margin: 0 auto 18px;
+  margin: 0 auto 18px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    border-radius: 16px;
+  border-radius: 16px;
 
-    background: rgba(255, 80, 100, 0.12);
-    border: 1px solid rgba(255, 80, 100, 0.18);
+  background: rgba(255, 80, 100, 0.12);
+  border: 1px solid rgba(255, 80, 100, 0.18);
 
-    font-size: 25px;
+  font-size: 25px;
 }
 
 /* Heading */
 .delete-folder-modal-card h3 {
-    margin: 0 0 12px;
+  margin: 0 0 12px;
 
-    color: #ffffff;
+  color: #ffffff;
 
-    font-size: 21px;
-    font-weight: 700;
+  font-size: 21px;
+  font-weight: 700;
 }
 
 /* Main text */
 .delete-folder-modal-card p {
-    margin: 0;
+  margin: 0;
 
-    color: #aeb7c6;
+  color: #aeb7c6;
 
-    font-size: 14px;
-    line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .delete-folder-modal-card p strong {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 /* Warning */
 .delete-folder-warning {
-    margin-top: 8px !important;
+  margin-top: 8px !important;
 
-    font-size: 13px !important;
+  font-size: 13px !important;
 
-    color: #8f98a8 !important;
+  color: #8f98a8 !important;
 }
 
 .delete-folder-warning strong {
-    color: #c6b8ff !important;
+  color: #c6b8ff !important;
 }
 
 /* Buttons container */
 .delete-folder-modal-actions {
-    display: flex;
+  display: flex;
 
-    gap: 10px;
+  gap: 10px;
 
-    margin-top: 25px;
+  margin-top: 25px;
 }
 
 /* Both buttons */
 .delete-folder-modal-actions button {
-    flex: 1;
+  flex: 1;
 
-    height: 44px;
+  height: 44px;
 
-    border: none;
-    border-radius: 11px;
+  border: none;
+  border-radius: 11px;
 
-    font-size: 14px;
-    font-weight: 600;
+  font-size: 14px;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 /* Cancel */
 .delete-folder-cancel {
-    color: #c4cbd6;
+  color: #c4cbd6;
 
-    background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.06);
 
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .delete-folder-cancel:hover {
-    background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
 /* Delete */
 .delete-folder-confirm {
-    color: #ffffff;
+  color: #ffffff;
 
-    background: linear-gradient(
-        135deg,
-        #ef4444,
-        #dc2626
-    );
+  background: linear-gradient(135deg,
+      #ef4444,
+      #dc2626);
 
-    box-shadow:
-        0 8px 20px rgba(239, 68, 68, 0.18);
+  box-shadow:
+    0 8px 20px rgba(239, 68, 68, 0.18);
 }
 
 .delete-folder-confirm:hover {
-    background: linear-gradient(
-        135deg,
-        #f05252,
-        #e02d2d
-    );
+  background: linear-gradient(135deg,
+      #f05252,
+      #e02d2d);
 
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 
-    box-shadow:
-        0 10px 25px rgba(239, 68, 68, 0.28);
+  box-shadow:
+    0 10px 25px rgba(239, 68, 68, 0.28);
 }
 
 .delete-folder-confirm:active,
 .delete-folder-cancel:active {
-    transform: scale(0.97);
+  transform: scale(0.97);
 }
 
 /* Mobile */
 @media (max-width: 700px) {
 
-    .delete-folder-modal {
-        padding: 16px;
-    }
+  .delete-folder-modal {
+    padding: 16px;
+  }
 
-    .delete-folder-modal-card {
-        max-width: 100%;
+  .delete-folder-modal-card {
+    max-width: 100%;
 
-        padding: 24px 20px;
+    padding: 24px 20px;
 
-        border-radius: 18px;
-    }
+    border-radius: 18px;
+  }
 
-    .delete-folder-modal-actions {
-        flex-direction: column-reverse;
-    }
+  .delete-folder-modal-actions {
+    flex-direction: column-reverse;
+  }
 
-    .delete-folder-modal-actions button {
-        width: 100%;
-    }
+  .delete-folder-modal-actions button {
+    width: 100%;
+  }
 }
+
 /* Mobile Trash Cards: keep Restore/Delete visible */
 @media (max-width: 700px) {
-    .trash-note-card {
-        height: auto !important;
-        min-height: 125px !important;
-        padding: 18px !important;
-        overflow: visible;
-    }
+  .trash-note-card {
+    height: auto !important;
+    min-height: 125px !important;
+    padding: 18px !important;
+    overflow: visible;
+  }
 
-    .trash-note-card .note-folder,
-    .trash-note-card > p {
-        display: block !important;
-    }
+  .trash-note-card .note-folder,
+  .trash-note-card>p {
+    display: block !important;
+  }
 
-    .trash-note-card .note-footer {
-        display: flex !important;
-        position: static !important;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-top: 16px;
-    }
+  .trash-note-card .note-footer {
+    display: flex !important;
+    position: static !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
 
-    .trash-note-card .note-actions {
-        display: flex !important;
-        gap: 10px;
-        flex-shrink: 0;
-    }
+  .trash-note-card .note-actions {
+    display: flex !important;
+    gap: 10px;
+    flex-shrink: 0;
+  }
 
-    .trash-note-card .note-actions button {
-        width: 38px;
-        height: 38px;
-        font-size: 17px;
-    }
+  .trash-note-card .note-actions button {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
 }
+
 /* ==============================
    TRASH CARDS — MOBILE LAYOUT
 ============================== */
 
 .trash-note-card {
-    width: 100%;
-    min-width: 0;
-    height: auto;
-    min-height: 0;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow: hidden;
-    padding: 18px;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 18px;
 }
 
 .trash-note-heading {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
 
 .trash-note-folder {
-    color: #8b80ff;
-    font-size: 12px;
-    text-transform: uppercase;
-    overflow-wrap: anywhere;
+  color: #8b80ff;
+  font-size: 12px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .trash-note-card .trash-note-title {
-    position: static;
-    width: 100%;
-    margin: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  position: static;
+  width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .trash-note-card .trash-note-content {
-    display: block;
-    width: 100%;
-    margin: 0;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  display: block;
+  width: 100%;
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .trash-note-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-    min-width: 0;
-    margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 4px;
 }
 
 .trash-note-deleted {
-    color: #8994a8;
-    font-size: 12px;
+  color: #8994a8;
+  font-size: 12px;
 }
 
 .trash-note-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
 }
 
 .trash-note-actions button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 40px;
-    padding: 8px 11px;
-    border: 1px solid #30394a;
-    border-radius: 9px;
-    background: #151b27;
-    color: #f1f5f9;
-    font-size: 13px;
-    cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px solid #30394a;
+  border-radius: 9px;
+  background: #151b27;
+  color: #f1f5f9;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .trash-restore-btn {
-    border-color: #256b51 !important;
+  border-color: #256b51 !important;
 }
 
 .trash-permanent-btn {
-    border-color: #803c49 !important;
+  border-color: #803c49 !important;
 }
 
 @media (max-width: 700px) {
-    .notes-grid {
-        grid-template-columns: minmax(0, 1fr);
-        width: 100%;
-        min-width: 0;
-    }
+  .notes-grid {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+  }
 
-    .notes-grid > .trash-note-card {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-        height: auto !important;
-        min-height: 0 !important;
-        box-sizing: border-box;
-        padding: 16px;
-        overflow: hidden;
-    }
+  .notes-grid>.trash-note-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box;
+    padding: 16px;
+    overflow: hidden;
+  }
 
-    .trash-note-card .note-folder,
-    .trash-note-card .note-footer,
-    .trash-note-card > p {
-        display: none;
-    }
+  .trash-note-card .note-folder,
+  .trash-note-card .note-footer,
+  .trash-note-card>p {
+    display: none;
+  }
 
-    .trash-note-card .trash-note-heading,
-    .trash-note-card .trash-note-content,
-    .trash-note-card .trash-note-footer {
-        display: flex;
-    }
+  .trash-note-card .trash-note-heading,
+  .trash-note-card .trash-note-content,
+  .trash-note-card .trash-note-footer {
+    display: flex;
+  }
 
-    .trash-note-card .trash-note-content {
-        display: block;
-    }
+  .trash-note-card .trash-note-content {
+    display: block;
+  }
 
-    .trash-note-card .trash-note-actions button {
-        min-height: 42px;
-    }
+  .trash-note-card .trash-note-actions button {
+    min-height: 42px;
+  }
 }
+
 /* Fix Logout button visibility on mobile */
 @media (max-width: 700px) {
-    .sidebar {
-        padding-bottom: 12px;
-    }
+  .sidebar {
+    padding-bottom: 12px;
+  }
 
-    .sidebar-bottom {
-        margin-top: 18px;
-        padding-bottom: 12px;
-        flex-shrink: 0;
-    }
+  .sidebar-bottom {
+    margin-top: 18px;
+    padding-bottom: 12px;
+    flex-shrink: 0;
+  }
 
-    .sidebar-logout-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        margin-top: 10px;
-        margin-bottom: 8px;
-    }
+  .sidebar-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 10px;
+    margin-bottom: 8px;
+  }
+}
+
+/* ==============================
+   FIX: Note modal must sit above the top bar (search, logo, bell)
+============================== */
+
+.modal {
+  z-index: 2500;
+}
+
+/* ==============================
+   FIX: Mobile-only like count must not show on desktop cards
+============================== */
+
+@media (min-width: 701px) {
+  .mobile-like-count {
+    display: none;
+  }
+}
+
+
+/* ==============================
+   FIX: while a note modal is open, the top bar (logo, search, bell)
+   must never be drawn on top of it
+============================== */
+
+body:has(.modal:not(.hidden)) .topbar {
+  z-index: 0;
+}
+
+/* ==============================
+   PDF viewer (mobile in-app pages + fallback card)
+============================== */
+
+.pdf-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.pdf-page-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+  border: 1px solid #29313f;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.pdf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px 0;
+  color: #929aaa;
+  font-size: 14px;
+}
+
+.pdf-pages-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.pdf-pages-footer small {
+  color: #8992a2;
+  font-size: 12px;
+}
+
+.pdf-fallback-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 18px;
+  text-align: center;
+  background: #0a0e16;
+  border: 1px solid #29313f;
+  border-radius: 12px;
+}
+
+.pdf-fallback-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  border-radius: 14px;
+  background: rgba(109, 93, 252, 0.15);
+}
+
+.pdf-fallback-info {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pdf-fallback-info strong {
+  display: block;
+  color: #ffffff;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.pdf-fallback-info small {
+  display: block;
+  margin-top: 4px;
+  color: #8992a2;
+  font-size: 12px;
+}
+
+.pdf-fallback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.pdf-btn:hover {
+  transform: translateY(-1px);
+}
+
+.pdf-btn-primary {
+  background: #6d5dfc;
+  color: #ffffff;
+}
+
+.pdf-btn-primary:hover {
+  background: #5b4cf0;
+}
+
+.pdf-btn-secondary {
+  background: #1a2230;
+  color: #d8dce5;
+  border-color: #303949;
+}
+
+.pdf-btn-secondary:hover {
+  background: #222c3b;
+  border-color: #6d5dfc;
 }

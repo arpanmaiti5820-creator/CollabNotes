@@ -647,6 +647,101 @@ app.get("/api/notes/:id", authenticateToken, async (req, res) => {
 });
 
 // ==============================
+// Stream a note attachment (same-origin, used for in-app PDF viewing)
+// ==============================
+
+app.get("/api/notes/:id/file", authenticateToken, async (req, res) => {
+
+    try {
+
+        const id = Number(req.params.id);
+
+        const userEmail = req.user.email;
+
+        const note = await Note.findOne({
+            id: id
+        });
+
+        if (!note || note.trashed || !note.file || !note.file.url) {
+            return res.status(404).json({
+                success: false,
+                message: "Attachment not found."
+            });
+        }
+
+        // Same rule as viewing a note
+        if (
+            note.visibility !== "public" &&
+            note.ownerEmail !== userEmail
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "You do not have permission to view this file."
+            });
+        }
+
+        const fileUrl = note.file.url;
+        const fileName = note.file.name || "attachment";
+        const fileType = note.file.type || "application/octet-stream";
+
+        // Older notes may still point to a local /uploads file
+        if (!/^https?:\/\//i.test(fileUrl)) {
+
+            const localPath = path.join(
+                uploadsDir,
+                path.basename(fileUrl)
+            );
+
+            if (!fs.existsSync(localPath)) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Attachment not found."
+                });
+            }
+
+            res.setHeader("Content-Type", fileType);
+            res.setHeader(
+                "Content-Disposition",
+                `inline; filename*=UTF-8''${encodeURIComponent(fileName)}`
+            );
+
+            return res.sendFile(localPath);
+        }
+
+        // Fetch from Cloudinary on the server, send to the browser
+        const upstream = await fetch(fileUrl);
+
+        if (!upstream.ok) {
+            return res.status(502).json({
+                success: false,
+                message: "Could not load the attachment."
+            });
+        }
+
+        const buffer = Buffer.from(await upstream.arrayBuffer());
+
+        res.setHeader("Content-Type", fileType);
+        res.setHeader("Content-Length", buffer.length);
+        res.setHeader(
+            "Content-Disposition",
+            `inline; filename*=UTF-8''${encodeURIComponent(fileName)}`
+        );
+        res.setHeader("Cache-Control", "private, max-age=3600");
+
+        res.send(buffer);
+
+    } catch (error) {
+
+        console.error("Get note file error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to load attachment."
+        });
+    }
+});
+
+// ==============================
 // Create Note
 // ==============================
 
